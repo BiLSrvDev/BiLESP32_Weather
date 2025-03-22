@@ -1,0 +1,488 @@
+<!--upd1 1.0a		view-source:https://bilsrv.github.io/WSBSrvWeatherPub/WSB_page_main.html		-->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+        <script type="text/javascript" src="https://bilsrv.github.io/WSBSrvWeatherPub/GaugeMeter.js"></script>
+		<script src="https://rawgit.com/Mikhus/canvas-gauges/master/gauge.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://atuin.ru/demo/ui-slider/jquery-ui.css">
+		<link rel="stylesheet" href="https://bilsrv.github.io/WSBSrvWeatherPub/WSB_side_loaded_css.css">
+		<link rel="stylesheet" href="https://rawgit.com/Mikhus/canvas-gauges/master/fonts/fonts.css">
+		<link rel="stylesheet" href="https://atuin.ru/demo/ui-slider/jquery-ui.css">
+
+		<style>
+
+  .GaugeMeter{
+    Position:        Relative;
+    Text-Align:      Center;
+    Overflow:        Hidden;
+    Cursor:          Default;
+  }
+
+  .GaugeMeter SPAN,
+  .GaugeMeter B{
+    Margin:          0 23%;
+    Width:           54%;
+    Position:        Absolute;
+    Text-align:      Center;
+    Display:         Inline-Block;
+    Color:           RGBa(0,0,0,.8);
+    Font-Weight:     100;
+    Font-Family:     "Open Sans", Arial;
+    Overflow:        Hidden;
+    White-Space:     NoWrap;
+    Text-Overflow:   Ellipsis;
+  }
+  .GaugeMeter[data-style="Semi"] B{
+    Margin:          0 10%;
+    Width:           80%;
+  }
+
+  .GaugeMeter[data-style="Full"] B{
+    Margin:          0 10%;
+    Width:           80%;
+  }
+			
+  .GaugeMeter[data-style="Arch"] B{
+    Margin:          0 10%;
+    Width:           80%;
+  }
+			
+  .GaugeMeter S,
+  .GaugeMeter U{
+	Color:           Black;
+    Text-Decoration: None;
+    Font-Size:       .5em;
+    Opacity:         1.0;
+  }
+
+  .GaugeMeter B{
+    Color:           Black;
+    Font-Weight:     300;
+    Font-Size:       .8em;
+    Opacity:         1.0;
+  }
+			
+  .bd_fail 
+  {
+    border: 3px inset red;
+	border-radius: 12px;
+  }		
+			
+  </style>
+<br>
+<form>
+<div class="col-xs-3 mb-2 offset-lg-1 col-lg-3 offset-md-1 offset-sm-1 offset-1 col-5 col-sm-4 col-md-4 col-xl-3">
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad()">Замерить всё</button></div>
+<div class=" offset-lg-0 col-lg-4 offset-sm-0 col-sm-5 col-6 offset-md-0 col-md-5 col-xl-3">
+		<span>Автозамер <input type="checkbox" class="form-check-input  ml-1" name="autmp" id="autmp" checked></span> 
+		<span>Автозапись <input type="checkbox" class="form-check-input  ml-1" name="autwrtemp" id="autwrtemp" checked></span> 
+		
+</div>
+<div class="container row text-center">
+	<p class="h5 modal-title text-center">Средние значения датчиков</p>
+					<div class="col-auto">
+						<div class="GaugeMeter1T" id="GauAvTemp"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1H" id="GauAvHum"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="GauAvPress"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1AQ" id="GauAirQ"></div>
+					</div>
+</div>
+<div class="container row text-center">
+					<p class="h5 modal-title text-center">Датчик LM75_1 и Датчик LM75_2</p>			  
+					<div class="col-auto">
+					<canvas id="lm75_t1"></canvas>
+					<label class="form-check-label" id="lm75_t1_lbl" for="lm75_t1_chk">Зап 1: <input class="form-check-input" id="lm75_t1_chk" type="checkbox"></label>	
+					</div>
+					<div class="col-auto">
+					<canvas id="lm75_t2"></canvas>
+					<label class="form-check-label" id="lm75_t2_lbl" for="lm75_t2_chk">Зап 2:<input class="form-check-input" id="lm75_t2_chk" type="checkbox"></label>
+	</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчики BME280</p>
+					<div class="col-auto">
+					<canvas id="bme280_1t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas id="bme280_2t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas id="sht35t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas id="sht41t"></canvas>
+					</div>
+</div>
+<div class="container row text-center">
+						<div class="col-auto">
+							<div class="GaugeMeter1H" id="sht35h"></div>
+						</div>
+						<div class="col-auto">
+							<div class="GaugeMeter1H" id="sht41h"></div>
+						</div>
+						<div class="col-auto">
+							<div class="GaugeMeter1H" id="bme280_1h"></div>
+						</div>
+						<div class="col-auto">
+							<div class="GaugeMeter1H" id="bme280_2h"></div>
+						</div>
+</div>
+<div class="container row text-center">
+						<div class="col-auto">
+							<div class="GaugeMeter1P" id="bme280_1p"></div>
+						</div>
+						<div class="col-auto">
+							<div class="GaugeMeter1P" id="bme280_2p"></div>
+						</div>
+</div>
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">DEW_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_DEW" name="bme280_DEW" value=""></div>
+				</div>					
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">QNH_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_QNH" name="bme280_QNH" value=""></div>
+				</div>	
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">ALT_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_ALT" name="bme280_ALT" value=""></div>
+				</div>					
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчик BME680</p>
+					<div class="col-auto">
+					<canvas id="bme680_1t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas id="aht21_t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas id="lpshw_t"></canvas>
+					</div>
+</div>
+<div class="container row text-center">
+					<div class="col-auto">
+						<div class="GaugeMeter1H" id="bme680_1h"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="bme680_1p"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1AQ" id="bme680_gr"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1H" id="aht21_h"></div>
+					</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчик LPS35HW</p>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="lpshw_p"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1T" id="ens160_tempout"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="lpshw_p"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="lpshw_p"></div>
+					</div>
+					<div class="col-auto">
+						<div class="GaugeMeter1P" id="lpshw_p"></div>
+					</div>
+</div>
+
+<div class="container row text-center">
+<p class="h5 modal-title text-center">Датчик ENS160</p>
+					<div class="col-auto">
+					<div class="GaugeMeter1T" id="ens160_tempout"></div>
+					</div>
+					<div class="col-auto">
+					<div class="GaugeMeter1H" id="ens160_hout"></div>
+					</div>
+					<div class="col-auto">
+					<div class="GaugeMeter1AQ" id="ens160_tvoc"></div>
+					</div>
+					<div class="col-auto">
+					<div class="GaugeMeter1AQ" id="ens160_eco2"></div>
+					</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center" id="htu21">Датчик CJMCU</p>
+				<p class="text-primary fw-bold fs-5">НЕТ ДАННЫХ</p>
+				<p class="h5 modal-title text-center" id="sht3x">Данные АЦП</p>
+				<div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+				  <div class="progress-bar bg-success" style="width: 25%">25%</div>
+				</div>
+				<div class="progress" role="progressbar" aria-label="Info example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+				  <div class="progress-bar bg-info text-dark" style="width: 50%">50%</div>
+				</div>
+				<div class="progress" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+				  <div class="progress-bar bg-warning text-dark" style="width: 75%">75%</div>
+				</div>
+				<div class="progress" role="progressbar" aria-label="Default example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+				  <div class="progress-bar bg-danger" style="width: 100%">100%</div>
+				</div>
+				<div class="progress" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+			  		<div class="progress-bar bg-success" style="width: 25%">25%</div>
+				</div>
+</div>
+				<p class="h5 modal-title text-center" id="sht3x">Доступность датчиков</p>
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+	    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="custom-tooltip" data-bs-title="This top tooltip is themed via CSS variables.">
+		<button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top">
+		  Tooltip on top
+		</button>
+
+</form>
+<script type="text/javascript">		
+// upd1a1 STABLE trim with upravl timer	https://rakosel.github.io/wsb_script_2_2_2.js
+//
+//					https://javascriptcompressor.com/
+//
+// $(document).ready(function ()
+window.onload = function () {
+
+	    /*var idArr = [];
+        $(".box").each(function(){
+            idArr.push($(this).attr("id"));
+        });*/
+        // Join array elements and display in alert
+        //alert(idArr.join(", "));
+
+//var gaugeElement = document.getElementsByTagName('canvas')[0];	
+var str_out = "";
+var str_out1 = "";
+var uart_json = {};
+var temp_json = {};
+var input_lm75 = {};
+var tmranim = 2000; // animate [s]
+// This jQuery https://canvas-gauges.com/documentation/examples/ 
+var CanvGaugeArr = [];
+
+// Canvas .each Default Settings 
+$('canvas').each(function(index){	
+    CanvGaugeArr.push(new LinearGauge({
+    renderTo: $( this ).attr('id'),
+    width: 100,
+    height: 300,
+	colorPlate: "black",
+	colorUnits: "black",
+	colorNeedle: "#222",
+	colorNeedleEnd: "",
+	colorBar: "#f5f5f5",
+	colorTitle: "#C90076",
+    colorPlate: "#ccc",
+	colorPlateEnd: "#ccc",
+	colorBarStroke: "black",
+	borderRadius: "20",
+	borders: "true",
+	minValue: -50,
+	maxValue: 50,
+	minorTicks: 11,
+	majorTicks: ['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
+    colorNumbers: ['cyan','blue','blue','blue','black','black','black','green','green','#CE7E00','red'],
+    colorMajorTicks: ['yellow','green','blue','blue','black','black','black','black','black','black','black'],
+    fontNumbersSize: "30",
+	fontValueSize: "45",
+	fontTitleSize: "35",
+	fontUnitsSize: "45",
+	value: 0,
+	units: '°C',
+	title: 'noname',
+	animationRule: 'elastic',
+	animationDuration: 250
+}).draw());
+	//console.log( index + ": " + $( this ).text() + $( this ).attr('id')+ " " );    units: '°C',	colorPlateEnd: "#327ac0",
+});
+
+	
+// This jQuery GaugeMeter Plugin 
+// theme: ["Red-Gold-Green","Green-Gold-Red","DarkBlue-LightBlue","LightBlue-DarkBlue"],
+// style: ["Semi","Arch"],
+var GuageMeter =
+{
+	theme: "Red-Gold-Green",
+	text: "-60",
+	style: "Arch",
+	text_size: "0.22",
+	append: "°C",
+	percent: 77,
+	size: 110,
+	width: 10,
+	color: null,
+	animate_gauge_colors: true,
+	animate_text_colors:  false,
+	label: "Темпер",
+	label_color: null
+}
+
+
+$(".GaugeMeter1T").gaugeMeter(GuageMeter);
+GuageMeter.append = "%";
+GuageMeter.label = "Влажн-ь"
+$(".GaugeMeter1H").gaugeMeter(GuageMeter);
+GuageMeter.append = "ммРт";
+GuageMeter.label = "Давл-е"
+GuageMeter.text_size = "0.18";
+$(".GaugeMeter1P").gaugeMeter(GuageMeter);
+GuageMeter.append = "";
+GuageMeter.label = "Воздух"
+$(".GaugeMeter1AQ").gaugeMeter(GuageMeter);
+
+//$( "div:has(.GaugeMeter1T)").addClass("bd_fail");.fadeOut(1000)
+$( ".GaugeMeter1T").addClass("bd_fail");
+$( ".GaugeMeter1T" ).find('bd_fail');
+//$( ".GaugeMeter1T" ).find('bd_fail').fadeIn(1000);
+
+//gaugeArr[1].update({ value: '47' });
+
+					/*$('canvas').attr({value:'51'})
+					/$('canvas').attr({width:'100',height:'150'});*/
+					
+					/*guagelm75_t.attr('data-value','47');guagelm75_t.attr('data-width','100');
+					guagelm75_t.attr('data-height','150');
+					guagelm75_t.attr('data-value','47');*/
+
+
+
+
+    $(".bt0st").attr("value", "off");
+    $(".navia").addClass("list-group-item list-group-item-action bg-light border");
+    $("#esp_tx").val("wsbuser.prints(node.heap());");
+    $("#esp_urx").val("");
+    rs = setInterval(refr_rtc, 3000);
+    i = 0;
+	
+	                // Initialize GaugeMeter plugin
+                $(".GaugeMeter").gaugeMeter();
+
+                // Bind new handler to init and update gauges.
+                ko.bindingHandlers.gaugeValue = {
+                    init: function(element, valueAccessor) {
+                        $(element).gaugeMeter({ percent: ko.unwrap(valueAccessor()) });
+                    },
+                    update: function(element, valueAccessor) {
+                        $(element).gaugeMeter({ percent: ko.unwrap(valueAccessor()) });
+                    }
+                };
+
+                // Create view model with inital gauge value 15mph
+
+                // Use observable for easy update.
+                var myViewModel = {
+                    Percent: ko.observable(15)
+                };
+                ko.applyBindings(myViewModel);
+	
+	
+};
+// cont: TEMP, RTC, DEBUG + Settings
+function txjstmp(s, d) {
+	var j=0,ii=0;
+	var tmpf = 0.0;
+	//var jT = 0;
+	//var jH = 0;
+	//var jP = 0;
+	var T_cnt = 1
+	var H_cnt = 1
+	var P_cnt = 1
+//    console.log(d);
+    if (s != 200) {
+        as0.removeClass("badge-success");
+        as0.addClass("badge-danger");
+        as0.text("Нет связи");
+        as1.removeClass("badge-success");
+        as1.addClass("badge-danger");
+        as1.text("Нет связи");
+        $(".swdeb").removeAttr("disabled");
+        ftmpd();
+        //console.log("Connection proplem!");
+        return 0;
+        //clearTimeout(rs.handle);
+    } else {
+
+        as0.removeClass("badge-danger");
+        as1.removeClass("badge-danger");
+        as0.addClass("badge-success");
+        as1.addClass("badge-success");
+        as0.text("ОК ");
+		as1.text("ОК ");
+        if (typeof d === "string") {
+            console.log("priem ok!");
+            try {
+                temp_json = JSON.parse(d);
+                console.log(s, temp_json);
+            } catch (e) {
+                // ftvall - form clear
+                ftvall("");
+                console.log(s, e.message);
+                return 0;
+            }
+        } else {
+            //console.log("d not string");
+            ftvall("");
+            return 0;
+        }
+    }
+    //$(".btns_bme280_1").fadeIn();
+    // posle input BME280: WEB -> ESP
+
+    if (temp_json["LM75_CMP"]) {
+        //$(".btns_bme280_1").removeClass('badge-success');
+        //$(".btns_bme280_1").removeClass('badge-danger');
+        try {
+            var aou1 = parseInt(temp_json.LM75_CMP[0].trim(), 10);
+            var aou2 = parseInt(temp_json.LM75_CMP[1].trim(), 10);
+            //console.log("temp_json.LM75_CMP[0]" + aou1);
+            //console.log("temp_json.LM75_CMP[1]" + aou2);
+            if (aou1 == 1) {
+                $("#lm75_t1_chk").prop("checked", true);
+            } else {
+                $("#lm75_t1_chk").prop("checked", false);
+            }
+            if (aou2 == 1) {
+                $("#lm75_t2_chk").prop("checked", true);
+            } else {
+                $("#lm75_t2_chk").prop("checked", false);
+            }
+        } catch (e) {
+            //console.log(e);
+        }
+    }
+}
+	
+// zapros temperature
+function sub_grad() {
+    //maOBJ = $("#tmpo").serializeArray();
+    fetch("/temp_out.json?n=" + Math.random(), "GET", txjstmp, 10);
+		 //$("#temperature").val(j_T.toString().substring(0, 6));
+		 //$("#humudity").val(j_H.toString().substring(0, 6));
+		 //$("#pressure").val(j_P.toString().substring(0, 6));
+    //console.log(maOBJ);
+}
+
+</script>

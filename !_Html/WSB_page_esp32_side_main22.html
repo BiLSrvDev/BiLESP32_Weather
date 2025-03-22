@@ -1,0 +1,67 @@
+	<div class="shadow p-3 mb-1 rounded navbar sb_nav bg-gradient border-bottom">
+		<button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+			<a class="navbar-brand align-items-center text-white" href="#">
+			<span>Меню:</span>
+			</a>
+			<span class="visually-hidden"></span>
+			<span class="navbar-toggler-icon text-white"></span>
+        </button>
+<li class="nav-item d-block">
+		<a class="navbar-brand mb-0 text-warning text-center">WSB_Server</a>
+</li>
+<li class="nav-item d-block">
+<span class="navbar text-white">Статус сервера:<span class="navbar-brand badge lead text-white tst0"></span></span>
+</li>
+	</div>
+<div class="row flex-nowrap-xl">
+<div id=sidebar_sensor class="bsn0 col-md-4 col-xl-4 px-2 shadow rounded border-end container-fluid collapse show" style=background-color:#DFDBDB>
+</div>
+<div class="mc1 bd-content col ps-md-1 pt-2 row-*-* mx-auto shadow border ">
+<div class="macnt text-white row-*-*">
+</div>
+<div class="setcnt text-white row-*-* shadow border mb-5 mx-auto collapse hide">
+</div>
+<div class="container-fluid shadow border">
+<p class="h5 modal-title text-center" id=esp_uart>Обмен по WEB-UART</p>
+<hr>
+<form id=esp_uart_form class=mb- novalidate>
+<p>
+Input</p>
+<div class="form-group col">
+<button type=button id=btn0 class="btn btn-primary" onclick=erxclr_uart()>
+Очистить Input</button>
+</div>
+<textarea id=esp_tx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+<div class="form-group col">
+<button type=button id=btn1 class="btn btn-primary" onclick=submit_uart()>
+SEND UART(D8)</button>
+<span>
+Передавать команды без LUA </span>
+<input type=checkbox name=uart_get_ch id=uart_get_ch>
+</div>
+<div class="form-group col">
+<button type=button id=btn2 class="btn btn-primary" onclick=etxclr_uart()>
+Очистить OUTPUT</button>
+</div>
+<p>
+Output</p>
+<textarea id=esp_urx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+</form>
+<div class=container>
+<div class=row>
+<div class="card border-light mb-3 col-md-9 offset-md-2 border shadow">
+<div class="card-header text-center">
+Version & about</div>
+<p class=card-text>
+WSB_Server<strong>&reg; </strong><span class="srvbuild"></span>, дата компиляции: <span class="srvdate"></span>
+build Official version by <strong> Farid_WSB&copy;Rakosel&trade;</strong> &copy; 2018 - 2024</p> 
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

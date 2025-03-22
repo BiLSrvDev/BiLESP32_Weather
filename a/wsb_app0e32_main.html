@@ -1,0 +1,67 @@
+<!--<div class="mc1 bd-content col ps-md-1 pt-2 row-*-* mx-auto shadow border ">
+!-->
+<div class="macnt container-fluid shadow border">
+<form>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(0)">Послать</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(1)">Обнов.прошив</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(2)">Считать прошивки</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(3)">SWITCH</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(4)">UPD_SLAVE</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_init()">Открыть соед</button>
+<div class="col-auto"><p id="res_fw" class="navbar-brand res_fw" ></p></p></div>
+</div>
+<span>Автозамер <input type="checkbox" class="form-check-input  ml-1" name="autmp" id="autmp" checked></span> 
+<span>Автозапись <input type="checkbox" class="form-check-input  ml-1" name="autwrtemp" id="autwrtemp" checked></span>
+
+
+<div class="container text-center">
+					<p class="h5 modal-title text-center">Датчик LM75_1 и Датчик LM75_2</p>			  
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t1"></canvas>
+					<label class="form-check-label" id="lm75_t1_lbl" for="lm75_t1_chk">Зап 1: <input class="form-check-input" id="lm75_t1_chk" type="checkbox" disabled></label>	
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t2"></canvas>
+					<label class="form-check-label" id="lm75_t2_lbl" for="lm75_t2_chk">Зап 2:<input class="form-check-input" id="lm75_t2_chk" type="checkbox" disabled></label>
+	</div>
+</div>
+</form>
+<div class="container-fluid shadow border">
+<p class="h5 modal-title text-center" id=esp_uart>Обмен по WEB-UART</p>
+<hr>
+<form id=esp_uart_form class=mb- novalidate>
+<p>
+Input</p>
+<div class="form-group col">
+<button type=button id=btn0 class="btn btn-primary" onclick=erxclr_uart()>
+Очистить Input</button>
+</div>
+<textarea id=esp_tx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+<div class="form-group col">
+<button type=button id=btn1 class="btn btn-primary" onclick=submit_uart()>
+SEND UART(D8)</button>
+<span>
+Передавать команды без LUA </span>
+<input type=checkbox name=uart_get_ch id=uart_get_ch>
+</div>
+<div class="form-group col">
+<button type=button id=btn2 class="btn btn-primary" onclick=etxclr_uart()>
+Очистить OUTPUT</button>
+</div>
+<p>
+Output</p>
+<textarea id=esp_urx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+</form>
+<div class=container>
+<div class=row>
+<div class="card border-light mb-3 col-md-9 offset-md-2 border shadow">
+<div class="card-header text-center">Version & about</div>
+<p class=card-text>WSB_Server<strong>&reg;</strong> 2.3.2 a02 build Official version by <strong>Farid_WSB&copy;Rakosel&trade;</strong> beta version from 30.09.2018-09.03.2019 based by Lua 5.1.4 on SDK 2.2.1 with NodeMCU 2.2.1 &copy; 2018 - 2024</p>
+</div>
+</div>
+</div>
+</div>

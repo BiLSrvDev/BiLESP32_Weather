@@ -1,0 +1,93 @@
+/* upd4a4 	https://bilsrv.github.io/WSBSrvWeatherPub/WSB_side_loaded_css.css	
+a,
+a:hover,
+a:focus {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.4s;
+}
+
+*/	
+
+body{
+  overflow : scroll;
+}
+
+#sidebar {
+  color: #fff;
+  transition: all 0.4s;
+}
+
+.noscroll { position: fixed;overflow:hidden; display: none;}
+
+.overlay { 
+   		overflow-y: scroll;
+		}
+.sb_nav
+{
+	background-color: darkslateblue;
+}
+.sidebar_sensor
+{
+	background-color:#A1A1A1;
+}
+.macnt
+{
+	background-color:#535157;
+}
+  .GaugeMeter{
+    Position:        Relative;
+    Text-Align:      Center;
+    Overflow:        Hidden;
+    Cursor:          Default;
+  }
+
+  .GaugeMeter SPAN,
+  .GaugeMeter B{
+    Margin:          -5% 10%;
+    Width:           70%;
+    Position:        Absolute;
+    Text-align:      Center;
+    Display:         Inline-Block;
+    Color:           RGBa(0,0,0,.8);
+    Font-Weight:     300;
+    Font-Family:     "Open Sans", Arial;
+    Overflow:        Hidden;
+    White-Space:     NoWrap;
+    Text-Overflow:   Ellipsis;
+  }
+
+  .GaugeMeter[data-style="Semi"] B{
+    Margin:          0 10%;
+    Width:           80%;
+  }
+
+  .GaugeMeter[data-style="Full"] B{
+    Margin:          0% 10%;
+    Width:           70%;
+  }
+
+  .GaugeMeter[data-style="Arch"] B{
+    Margin:          0 10%;
+    Width:           80%;
+  }
+
+
+  .GaugeMeter S,
+  .GaugeMeter U{
+    Text-Decoration: None;
+    Font-Size:       .6em;
+    Opacity:         1.0;
+  }
+
+  .GaugeMeter B{
+    Color:           Cyan;
+    Font-Weight:     300;
+    Font-Size:       .8em;
+    Opacity:         1.0;
+  }
+  .bd_fail 
+  {
+    border: 3px inset red;
+	border-radius: 12px;
+  }		

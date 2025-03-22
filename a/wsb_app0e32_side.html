@@ -1,0 +1,52 @@
+<div class="container-fluid shadow p-3 mb-5 bg-white rounded">
+<ul class=navbar-nav>
+<li class="nav-item bg-primary rounded">
+<span class=text-light>WSB_Server [DEMO VERSION]</span>
+</li>
+<li class=nav-item><span>Статус сервера:</span>
+<span class="pst0 navbar-brand badge mb-0 text-white"></span>
+</li>
+<li class=nav-item> Меню: <button class="bt0st1 navbar-dark bg-info" type=button aria-expanded=false aria-label="Навигация по сенсорам">
+<span class=navbar-toggler-icon></span>
+</button>
+</li>
+<li class="nav-item bg-primary rounded">
+<span class="text-light">Режим:</span><span class="text-light srvmode"></span>
+</li>
+</ul>
+<hr>
+<div class=sidebar-heading>Датчики температуры: </div>
+<div id=list-example class="list-group list-group-flush">
+<a class=navia href=#srednie onclick=clbtn0()>Средние значения</a>
+<a class=navia href=#lm75 onclick=clbtn0()>LM_75</a>
+<a class=navia href=#dht22 onclick=clbtn0()>DHT22</a>
+<a class=navia href=#bme280 onclick=clbtn0()>BME280</a>
+<a class=navia href=#sht3x onclick=clbtn0()>SHTx</a>
+<a class=navia href=#htu21 onclick=clbtn0()>HTU21</a>
+<a class=navia href=#expmeas onclick=sub_measure()>Экспорт замеров</a>
+<a class=navia href=#clrmeas onclick=clr_measure()>Очистить замеры</a>
+<div class=sidebar-heading>Дневной свет: </div>
+<a class=navia href=#temt onclick=clbtn0()>TEMT6000</a>
+<div class=sidebar-heading>Обмен по WEB-UART:</div>
+<a class=navia href=#esp_uart onclick=clbtn0()>WEB-UART</a><br>
+<div class="custom-control custom-switch">
+<input type=checkbox class="custom-control-input swdeb" id=auza>
+<label class="custom-control-label swdebl" for=auza>Включить режим настройки</label>
+<span class="pst1 navbar-brand badge mb-0 text-white"></span>
+</div>
+<div class="sidebar-heading sideset collapse hide">
+<div class=sidebar-heading>Настройка датчиков: </div>
+<a class=navia href=#list-item-4>LM_75</a>
+<a class=navia href=#list-item-3>BME280</a>
+<a class=navia href=#list-item-4>SHTx</a>
+<a class=navia href=#list-item-4>Задать время</a>
+</div>
+<ul class=navbar-nav>
+<li class=nav-item>
+<p class="lead mb-0">Время сервера:</p>
+<p class="ptime lead mb-0">
+</p>
+</li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,530 @@
+<!doctype html>
+<html>
+<head>
+<title>Online jQuery Editor</title>
+<script src="https://www.tutorialspoint.com/jquery/jquery-3.6.0.js"></script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js">
+	</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/2.0.0/jquery.mobile-events.min.js">
+	</script>
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://rawgit.com/Mikhus/canvas-gauges/master/fonts/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<script src="https://rawgit.com/Mikhus/canvas-gauges/master/gauge.min.js"></script>
+<script src="https://bilsrv.github.io/WSBSrvWeatherPub/GaugeMeter.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>GaugeMeter.js - jQuery Plugin</title>
+    <meta
+      name="description"
+      content="Easy to use gauge meter JavaScript plugin using jQuery"
+    />
+    <meta name="author" content="Mictronics" />
+    <style>
+
+body
+{
+ background-color:cyan
+}
+
+.noscroll { position: fixed;overflow:hidden; display: none;}
+
+.overlay { 
+   		overflow-y: scroll;
+		}
+.sb_nav
+{
+	background-color: darkslateblue;
+}
+.sidebar_sensor
+{
+	background-color:#A1A1A1;
+}
+.macnt
+{
+	background-color:#535157;
+}
+  .GaugeMeter{
+    Position:        Relative;
+    Text-Align:      Center;
+    Overflow:        Hidden;
+    Cursor:          Default;
+  }
+  /*.GaugeMeter::before
+	{
+	content: ' ';
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0.6;
+	background: #0070ad URL(https://bilsrv.github.io/WSBSrvWeatherPub/BokehFrost.jpg) Top Left No-Repeat;
+    background-size: Cover;
+	}
+*/
+  .GaugeMeter SPAN,
+  .GaugeMeter B{
+    Margin:          -20% 10%;
+    Width:           80%;
+    Position:        Absolute;
+    Text-align:      Center;
+    Display:         Inline-Block;
+    Color:           RGBa(255,255,255,.8);
+    Font-Weight:     300;
+    Font-Family:     "Open Sans", Arial;
+    Overflow:        Hidden;
+    White-Space:     NoWrap;
+    Text-Overflow:   Ellipsis;
+  }
+  .GaugeMeter[data-style="Semi"] B{
+    Margin:          0% 10%;
+    Width:           80%;
+  }
+
+  .GaugeMeter[data-style="Full"] B{
+    Margin:          0% 10%;
+    Width:           70%;
+  }
+			
+  .GaugeMeter[data-style="Arch"] B{
+    Margin:          0% 10%;
+    Width:           70%;
+  }
+			
+  .GaugeMeter S,
+  .GaugeMeter U{
+	Color:           Black;
+    Text-Decoration: None;
+    Font-Size:       .6em;
+    Opacity:         1.0;
+  }
+
+  .GaugeMeter B{
+    Color:           Black;
+    Font-Weight:     400;
+    Font-Size:       .8em;
+    Opacity:         1.0;
+  }
+
+  .bd_fail 
+  {
+    border: 3px inset red;
+	border-radius: 12px;
+  }		
+  
+	  
+    </style>
+	
+
+
+
+</head>
+
+<div class="col-xs-3 mb-2 offset-lg-1 col-lg-3 offset-md-1 offset-sm-1 offset-1 col-5 col-sm-4 col-md-4 col-xl-3 px-2">
+<!-- make sure the attribute enctype is set to multipart/form-data -->
+<form enctype="multipart/form-data" action="post_fw" id="post_fw" name="post_fw">
+    <!-- upload of a single file -->
+    <p>
+        <label>Загрузить FW: </label><br/>
+        <input type="file" name="file_fw"/>
+ 	</p>
+	<p>
+        <input type="submit" value="post_fw">
+    </p>
+</form>
+</div>
+<div class=" offset-lg-0 col-lg-4 offset-sm-0 col-sm-5 col-6 offset-md-0 col-md-5 col-xl-3">
+<span>Автозамер <input type="checkbox" class="form-check-input  ml-1" name="autmp" id="autmp" checked></span> 
+<span>Автозапись <input type="checkbox" class="form-check-input  ml-1" name="autwrtemp" id="autwrtemp" checked></span> 	
+</div>
+<div class="container row text-center">
+	<p class="h5 modal-title text-center">Средние значения датчиков</p>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" id="GauAvTemp"></canvas>
+					</div>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" id="GauAvHum"></canvas>
+					</div>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" id="GauAvPress"></canvas>
+					</div>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" id="GauAirQ"></canvas>
+					</div>
+					<div class="col-auto">
+						<p class="navbar badge lead text-white font-weight-normal" style="width: 8rem;">Индекс воздуха:<p id="ens_AIQ" class="navbar-brand ens_AIQ" ></p></p>
+					</div>
+</div>
+<div class="container row text-center">
+					<p class="h5 modal-title text-center">Датчик LM75_1 и Датчик LM75_2</p>			  
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t1"></canvas>
+					<label class="form-check-label" id="lm75_t1_lbl" for="lm75_t1_chk">Зап 1: <input class="form-check-input" id="lm75_t1_chk" type="checkbox"></label>	
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t2"></canvas>
+					<label class="form-check-label" id="lm75_t2_lbl" for="lm75_t2_chk">Зап 2:<input class="form-check-input" id="lm75_t2_chk" type="checkbox"></label>
+	</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчики BME280</p>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="bme280_1t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="bme280_2t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="sht35t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="sht41t"></canvas>
+					</div>
+</div>
+<div class="container row text-center">
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasH1" id="bme280_1h"></canvas>
+						</div>
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasH1" id="bme280_2h"></canvas>
+						</div>
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasH1" id="sht35h"></canvas>
+						</div>
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasH1" id="sht41h"></canvas>
+						</div>
+</div>
+<div class="container row text-center">
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasP1" id="bme280_1p"></canvas>
+						</div>
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasP1" id="bme280_2p"></canvas>
+						</div>
+						<div class="col-auto">
+							<canvas data-type="radial-gauge" class="canvasP1" id="bme680_1p"></canvas>
+						</div>
+</div>
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">DEW_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_DEW" name="bme280_DEW" value=""></div>
+				</div>					
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">QNH_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_QNH" name="bme280_QNH" value=""></div>
+				</div>	
+				<div class="form-group row">
+					<div class="col-xs-6 offset-xl-1 col-xl-4 col-lg-3 offset-lg-1 offset-md-1 col-md-5">ALT_bme280:</div>
+				  <div class="col-xs-3 col-md-3 offset-xl-2 offset-lg-2"><input type="text" class="form-control" id = "bme280_ALT" name="bme280_ALT" value=""></div>
+				</div>					
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчик BME680</p>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="bme680_1t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="aht21_t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="ens160_t"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lpshw_t"></canvas>
+					</div>
+</div>
+<div class="container row text-center">
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" class="canvasH1" id="bme680_1h"></canvas>
+					</div>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" class="canvasH1" id="aht21_h"></canvas>
+					</div>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" id="bme680_gr"></canvas>
+					</div>
+						
+					</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчик LPS35HW</p>
+					<div class="col-auto">
+						<canvas data-type="radial-gauge" class="canvasP1" id="lpshw_p"></canvas>
+					</div>
+</div>
+
+<div class="container row text-center">
+<p class="h5 modal-title text-center">Датчик ENS160</p>
+					<div class="col-auto">
+					<canvas data-type="radial-gauge" class="canvasH1" id="ens160_tempout"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="radial-gauge" class="canvasH1" id="ens160_hout"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="radial-gauge" id="ens160_tvoc"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="radial-gauge" id="ens160_eco2"></canvas>
+					</div>
+					<div class="col-auto">
+					<canvas data-type="radial-gauge" id="ens160_AIQ"></canvas>
+						<p class="text-center" id="ens160_AIQ" style="width: 4rem;">ens160_AIQ</p>
+					</div>
+</div>
+</div>
+<div class="container row text-center">
+				<p class="h5 modal-title text-center">Датчик CJMCU</p>
+				<p class="text-primary fw-bold fs-5" id="CJMCU">НЕТ ДАННЫХ</p>
+				<p class="h5 modal-title text-center">Данные АЦП</p>
+				<div class="progress">
+					<div class="progress-bar bg-success text-dark adc0" role="progressbar" aria-label="Success" aria-valuenow="0" aria-valuemin="0" aria-valuemax="4096" style="width: 0%">21212<p id="adc0" class="navbar-brand"></p></div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar bg-info text-dark adc1" role="progressbar" aria-label="Info" aria-valuenow="0" aria-valuemin="0" aria-valuemax="4096" style="width: 0%"><p id="adc1" class="navbar-brand" >1212</p></div>
+				</div>
+				<div class="progress">
+					<div class="progress-bar bg-warning text-dark adc2" role="progressbar" aria-label="Warning" aria-valuenow="0" aria-valuemin="0" aria-valuemax="4096" style="width: 0%"><p id="adc2" class="navbar-brand" >1212</p></div>
+				</div>
+<div class="progress">
+					<div class="progress-bar bg-success adc3" role="progressbar" aria-label="Danger" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="navbar-brand" >25</span></div>
+</div>
+					<div class="progress">
+  <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+</div>
+			
+</div>
+	<p class="h5 modal-title text-center">Доступность датчиков</p>
+	<p class="h5 modal-title text-center REG_FAIL">Доступность датчиков</p>
+   <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="Top popover" aria-describedby="popover452354"></button>
+   <button type="button" class="btn btn-secondary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="top" data-bs-content="Top popover" aria-describedby="popover452354"></button>
+</form>
+
+
+
+<script>
+var CanvGaugeArrL = [];
+var CanvGaugeArrR = [];
+
+$("form").on( "submit", function( event ) {
+ 
+  console.log("ds")
+ // Stop form from submitting normally
+  event.preventDefault();
+
+	var formData = new FormData(this);
+	// var file_data = $("#file").prop('files')[0];
+	// $('input[type=file]')[0].files[0]
+	formData.append('file', $('input[type=file]').prop('files')[0]);
+
+	// Осуществление запроса
+	$.ajax({
+    url: 'post_fw',
+    type: 'POST',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(data) {
+        console.log('Файл успешно загружен:', data);
+    },
+    error: function(e) {
+        console.error('Ошибка при загрузке:', e);
+    }
+	})
+  // Get some values from elements on the page:
+  //var $form = $( this ),
+  //  val = $form.find( "input[name='file_fw']").val(),
+  //  url = $form.attr( "action" );
+ console.log(new FormData(this));
+  // Send the data using post
+  //var posting = $.post( url, { s: term } );
+ 
+  // Put the results in a div
+  //posting.done(function( data ) {
+  //  var content = $( data ).find( "#content" );
+  //  $( "#result" ).empty().append( content );
+  //});
+});
+
+
+
+
+
+
+
+
+
+//var maOBJarr =[];
+
+$('body').delay(500).queue(function() {
+	
+
+
+	
+	
+	ind=0;
+	txt="";
+	$(".progress-bar").each(function(index){
+		//$ = jQuery.noConflict();
+		txt=$(this).attr('class').toString().split(' ')[3];
+
+		$('.'+txt).attr("aria-valuenow","90");
+		$('.'+txt).attr("aria-valuenow","90");
+		$('.'+txt).css("width", "500");
+		
+		//$(".adc3").css("width", "100");
+		//$('#'+txt).text("100");
+		
+	});
+	
+	
+	$(".ens_AIQ").addClass("bg-orange").text("ХОРОШО!");
+	
+	$('.ens_AIQ').last().removeClass(function() {
+    return $( this ).prev().attr("class");
+  });
+
+  
+	//$('.ens_AIQ')[2].className = '';
+	
+maOBJ = $('*');
+
+//console.log("maOBJ");
+$("canvas").each(function(index){	
+	//maOBJarr.push($( this ));
+	//console.log($( this ));
+});
+    //$(this).load('myPage.php');
+// Canvas .each Default Settings 
+$("canvas[data-type='linear-gauge']").each(function(index){	
+    CanvGaugeArrL.push(new LinearGauge({
+    renderTo: $( this ).attr('id'),
+    width: 100,
+    height: 300,
+	colorPlate: "black",
+	colorUnits: "black",
+	colorNeedle: "#222",
+	colorNeedleEnd: "",
+	colorBar: "#f5f5f5",
+	colorTitle: "blue",
+    colorPlate: "#ccc",
+	colorPlateEnd: "#ccc",
+	colorBarStroke: "black",
+	borderRadius: "20",
+	borders: "true",
+	minValue: -50,
+	maxValue: 50,
+	minorTicks: 11,
+	majorTicks: ['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
+    colorNumbers: ['cyan','blue','blue','blue','black','black','black','green','green','#CE7E00','red'],
+    colorMajorTicks: ['yellow','green','blue','blue','black','black','black','black','black','black','black'],
+    fontNumbersSize: "30",
+	fontValueSize: "45",
+	fontTitleSize: "35",
+	fontUnitsSize: "45",
+	value: 0,
+	units: '°C',
+	title: String($(this).attr('id')),
+	animationRule: 'elastic',
+	animationDuration: 250
+}).draw());
+});
+
+$("canvas[data-type='radial-gauge']").each(function(index){	
+	
+	if($(this).attr('class')=="canvasP1")
+	{unit="ммРст"}
+	else
+	{unit="%"}
+	
+	
+    CanvGaugeArrR.push(new RadialGauge({
+    renderTo: $(this).attr('id'),
+    width: 150,
+    height: 150,
+    units: unit,
+    minValue: 0,
+    maxValue: 100,
+    majorTicks: [
+        "0",
+        "10",
+        "20",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90",
+        "100"
+    ],
+    minorTicks: 5,
+    strokeTicks: true,
+    highlights: [
+        {
+            "from": 60,
+            "to": 100,
+            "color": "rgba(200, 50, 50, .75)"
+        }
+    ],
+    colorPlate: "#fff",
+    borderShadowWidth: 0,
+    borders: false,
+    needleType: "arrow",
+    needleWidth: 2,
+    needleCircleSize: 7,
+    needleCircleOuter: true,
+    needleCircleInner: false,
+    animationDuration: 1500,
+    animationRule: "linear"
+}).draw());
+	//console.log(CanvGaugeArrR[index]);
+});
+
+}); 
+	
+window.onload = function () {
+	
+	
+function rIAQItem_convertValue(rawValue,_temp,_humd)
+{
+  // Get temperature & humidity
+	_hum_ratio = 0.09;
+	_min_T=0;
+	_min_U=500;
+	_max_T=1600000;
+	_max_U=0;
+	
+ // Compensate exponential impact of humidity on resistance
+  if (!isNaN(_temp) && !isNaN(_humd)) {
+    // Calculate stauration density and absolute humidity
+    // double hum_abs = _humd * 10 * ((6.112 * 100.0 * exp((17.67 * _temp)/(243.12 + _temp)))/(461.52 * (_temp + 273.15)));
+    hum_abs = 6.112 * Math.exp((17.67 * _temp)/(_temp + 243.5)) * _humd * 2.1674 / (273.15 + _temp);
+    // Calculate the compensated value
+    comp_gas = rawValue * Math.exp(_hum_ratio * hum_abs);
+	//console.log(comp_gas)
+	//console.log((_max_T-_min_T))
+	//console.log((_max_U-_min_U))
+	IAQ=(comp_gas-_min_T)/(_max_T-_min_T)*(_max_U-_min_U)+_min_U;
+    // Recalculation in IAQ from 0 to 500 with inversion
+    return IAQ;
+  };
+	return IAQ;
+}
+
+
+
+}
+</script>

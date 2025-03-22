@@ -1,0 +1,48 @@
+<div class="mc1 bd-content col ps-md-1 pt-2 row-*-* mx-auto shadow border ">
+<div class="macnt text-white row-*-*">
+</div>
+<div class="setcnt text-white row-*-* shadow border mb-5 mx-auto collapse hide">
+</div>
+<div class="container-fluid shadow border">
+<p class="h5 modal-title text-center" id=esp_uart>Обмен по WEB-UART</p>
+<hr>
+<form id=esp_uart_form class=mb- novalidate>
+<p>Input</p>
+<div class="form-group col">
+<button type=button id=btn0 class="btn btn-primary" onclick=erxclr_uart()>
+Очистить Input</button>
+</div>
+<textarea id=esp_tx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+<div class="form-group col">
+<button type=button id=btn1 class="btn btn-primary" onclick=submit_uart()>
+SEND UART(D8)</button>
+<span>
+Передавать команды без LUA </span>
+<input type=checkbox name=uart_get_ch id=uart_get_ch>
+</div>
+<div class="form-group col">
+<button type=button id=btn2 class="btn btn-primary" onclick=etxclr_uart()>
+Очистить OUTPUT</button>
+</div>
+<p>
+Output</p>
+<textarea id=esp_urx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+</form>
+<div class=container>
+<div class=row>
+<div class="card border-light mb-3 col-md-9 offset-md-2 border shadow">
+<div class="card-header text-center">
+Version & about</div>
+<p class=card-text>
+WSB_Server<strong>&reg; </strong><span class="srvbuild"></span>, дата компиляции: <span class="srvdate"></span>
+build Official version by <strong> Farid_WSB&copy;Rakosel&trade;</strong> &copy; 2018 - 2024</p> 
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

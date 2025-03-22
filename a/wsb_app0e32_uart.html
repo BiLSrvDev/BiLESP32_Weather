@@ -1,0 +1,266 @@
+<!--upd1 5.1a view-source:https://bilsrv.github.io/WSBSrvWeatherPub/WSB_page_main.html		-->
+<meta charset="utf-8">
+<br>
+
+<div class="col-xs-3 mb-2 offset-lg-1 col-lg-3 offset-md-1 offset-sm-1 offset-1 col-5 col-sm-4 col-md-4 col-xl-3 px-2">
+<!--<form enctype="multipart/form-data" action="post_fw" id="post_fw" name="post_fw">
+ upload of a single file 
+<p>
+        <label>Загрузить FW: </label><br/>
+        <input type="file"/>
+</p>
+<p>
+        <input type="submit" value="post_fw"/>
+</p>
+</form>
+-->
+<form>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(0)">Послать</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(1)">Обнов.прошив</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(2)">Считать прошивки</button>
+	<button type="button" id="btn0" class="btn btn-primary" onclick="sub_grad(3)">SWITCH</button>
+<button type="button" id="btn0" class="btn btn-primary" onclick="sub_init()">Открыть соед</button>
+<div class="col-auto"><p id="res_fw" class="navbar-brand res_fw" ></p></p></div>
+</div>
+<div class="offset-lg-0 col-lg-4 offset-sm-0 col-sm-5 col-6 offset-md-0 col-md-5 col-xl-3">
+<span>Автозамер <input type="checkbox" class="form-check-input  ml-1" name="autmp" id="autmp" checked></span> 
+<span>Автозапись <input type="checkbox" class="form-check-input  ml-1" name="autwrtemp" id="autwrtemp" checked></span>
+
+</div>
+
+<div class="container row text-center">
+					<p class="h5 modal-title text-center">Датчик LM75_1 и Датчик LM75_2</p>			  
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t1"></canvas>
+					<label class="form-check-label" id="lm75_t1_lbl" for="lm75_t1_chk">Зап 1: <input class="form-check-input" id="lm75_t1_chk" type="checkbox" disabled></label>	
+					</div>
+					<div class="col-auto">
+					<canvas data-type="linear-gauge" class="canvasT" id="lm75_t2"></canvas>
+					<label class="form-check-label" id="lm75_t2_lbl" for="lm75_t2_chk">Зап 2:<input class="form-check-input" id="lm75_t2_chk" type="checkbox" disabled></label>
+	</div>
+</div>
+</form>
+<div class="container-fluid shadow border">
+<p class="h5 modal-title text-center" id=esp_uart>Обмен по WEB-UART</p>
+<hr>
+<form id=esp_uart_form class=mb- novalidate>
+<p>
+Input</p>
+<div class="form-group col">
+<button type=button id=btn0 class="btn btn-primary" onclick=erxclr_uart()>
+Очистить Input</button>
+</div>
+<textarea id=esp_tx rows=10 cols=80 class=form-control>
+</textarea>
+<br>
+<div class="form-group col">
+<button type=button id=btn1 class="btn btn-primary" onclick=submit_uart()>
+SEND UART(D8)</button>
+<span>
+Передавать команды без LUA </span>
+<input type=checkbox name=uart_get_ch id=uart_get_ch>
+</div>
+<div class="form-group col">
+<button type=button id=btn2 class="btn btn-primary" onclick=etxclr_uart()>
+Очистить OUTPUT</button>
+</div>
+<br>
+</form>
+</div>
+
+<script>
+
+// --------
+// Tooltips
+// --------
+// Instantiate all tooltips in a docs or StackBlitz
+  document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    .forEach(tooltip => {
+      new bootstrap.Tooltip(tooltip)
+    })
+
+  // --------
+  // Popovers
+  // --------
+  // Instantiate all popovers in docs or StackBlitz
+  document.querySelectorAll('[data-bs-toggle="popover"]')
+    .forEach(popover => {
+      new bootstrap.Popover(popover)
+    })
+
+  // -------------------------------
+  // Toasts
+  // -------------------------------
+  // Used by 'Placement' example in docs or StackBlitz
+  const toastPlacement = document.getElementById('toastPlacement')
+  if (toastPlacement) {
+    document.getElementById('selectToastPlacement').addEventListener('change', function () {
+      if (!toastPlacement.dataset.originalClass) {
+        toastPlacement.dataset.originalClass = toastPlacement.className
+      }
+
+      toastPlacement.className = `${toastPlacement.dataset.originalClass} ${this.value}`
+    })
+  }
+
+  // Instantiate all toasts in docs pages only
+  document.querySelectorAll('.bd-example .toast')
+    .forEach(toastNode => {
+      const toast = new bootstrap.Toast(toastNode, {
+        autohide: false
+      })
+
+      toast.show()
+    })
+
+  // Instantiate all toasts in docs pages only
+  // js-docs-start live-toast
+  const toastTrigger = document.getElementById('liveToastBtn')
+  const toastLiveExample = document.getElementById('liveToast')
+
+  if (toastTrigger) {
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    toastTrigger.addEventListener('click', () => {
+      toastBootstrap.show()
+    })
+  }
+  // js-docs-end live-toast
+
+  // -------------------------------
+  // Alerts
+  // -------------------------------
+  // Used in 'Show live alert' example in docs or StackBlitz
+
+  // js-docs-start live-alert
+  const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+  const appendAlert = (message, type) => {
+    const wrapper = document.createElement('div')
+    wrapper.innerHTML = [
+      `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+      `   <div>${message}</div>`,
+      '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+      '</div>'
+    ].join('')
+
+    alertPlaceholder.append(wrapper)
+  }
+
+  const alertTrigger = document.getElementById('liveAlertBtn')
+  if (alertTrigger) {
+    alertTrigger.addEventListener('click', () => {
+      appendAlert('Nice, you triggered this alert message!', 'success')
+    })
+  }
+  // js-docs-end live-alert
+
+  // --------
+  // Carousels
+  // --------
+  // Instantiate all non-autoplaying carousels in docs or StackBlitz
+  document.querySelectorAll('.carousel:not([data-bs-ride="carousel"])')
+    .forEach(carousel => {
+      bootstrap.Carousel.getOrCreateInstance(carousel)
+    })
+
+  // -------------------------------
+  // Checks & Radios
+  // -------------------------------
+  // Indeterminate checkbox example in docs and StackBlitz
+  document.querySelectorAll('.bd-example-indeterminate [type="checkbox"]')
+    .forEach(checkbox => {
+      if (checkbox.id.includes('Indeterminate')) {
+        checkbox.indeterminate = true
+      }
+    })
+
+  // -------------------------------
+  // Links
+  // -------------------------------
+  // Disable empty links in docs examples only
+  document.querySelectorAll('.bd-content [href="#"]')
+    .forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault()
+      })
+    })
+
+  // -------------------------------
+  // Modal
+  // -------------------------------
+  // Modal 'Varying modal content' example in docs and StackBlitz
+  // js-docs-start varying-modal-content
+  const exampleModal = document.getElementById('exampleModal')
+  if (exampleModal) {
+    exampleModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const recipient = button.getAttribute('data-bs-whatever')
+      // If necessary, you could initiate an Ajax request here
+      // and then do the updating in a callback.
+
+      // Update the modal's content.
+      const modalTitle = exampleModal.querySelector('.modal-title')
+      const modalBodyInput = exampleModal.querySelector('.modal-body input')
+
+      modalTitle.textContent = `New message to ${recipient}`
+      modalBodyInput.value = recipient
+    })
+  }
+  // js-docs-end varying-modal-content
+
+  // -------------------------------
+  // Offcanvas
+  // -------------------------------
+  // 'Offcanvas components' example in docs only
+  const myOffcanvas = document.querySelectorAll('.bd-example-offcanvas .offcanvas')
+  if (myOffcanvas) {
+    myOffcanvas.forEach(offcanvas => {
+      offcanvas.addEventListener('show.bs.offcanvas', event => {
+        event.preventDefault()
+      }, false)
+    })
+  }
+// Attach a submit handler to the form
+$("form").on( "submit", function( event ) {
+ 
+  console.log("ds")
+ // Stop form from submitting normally
+  event.preventDefault();
+
+	var formData = new FormData(this);
+	// var file_data = $("#file").prop('files')[0];
+	// $('input[type=file]')[0].files[0]
+	formData.append('file', $('input[type=file]').prop('files')[0]);
+
+	// Осуществление запроса
+	$.ajax({
+    url: 'post_fw',
+    type: 'POST',
+	enctype: 'multipart/form-data',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function(data) {
+        console.log('Файл успешно загружен:', data);
+    },
+    error: function(e) {
+        console.error('Ошибка при загрузке:', e);
+    }
+	})
+  // Get some values from elements on the page:
+  //var $form = $( this ),
+  //  val = $form.find( "input[name='file_fw']").val(),
+  //  url = $form.attr( "action" );
+ console.log(new FormData(this));
+  // Send the data using post
+  //var posting = $.post( url, { s: term } );
+ 
+  // Put the results in a div
+  //posting.done(function( data ) {
+  //  var content = $( data ).find( "#content" );
+  //  $( "#result" ).empty().append( content );
+  //});
+});
+
+</script>
