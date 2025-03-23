@@ -823,6 +823,39 @@ else if(aa==4)
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
+	
+else if(aa==5)
+{
+	httpd_cmd.command="cmd1"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+	
+else if(aa==6)
+{
+	httpd_cmd.command="cmd2"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+	
+else if(aa==7)
+{
+	httpd_cmd.command="cmd3"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+	
+else if(aa==8)
+{
+	httpd_cmd.command="cmd4"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+
 
 if (WSsocket.readyState === 1) {
 	WSsocket.send(JSON.stringify(httpd_cmd));
