@@ -818,7 +818,7 @@ else if(aa==3)
 	
 else if(aa==4)
 {
-	httpd_cmd.command="cmd1"
+	httpd_cmd.command="get_sens"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -826,7 +826,7 @@ else if(aa==4)
 	
 else if(aa==5)
 {
-	httpd_cmd.command="cmd2"
+	httpd_cmd.command="cmd1"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -834,7 +834,7 @@ else if(aa==5)
 	
 else if(aa==6)
 {
-	httpd_cmd.command="cmd3"
+	httpd_cmd.command="cmd2"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -842,7 +842,7 @@ else if(aa==6)
 	
 else if(aa==7)
 {
-	httpd_cmd.command="cmd4"
+	httpd_cmd.command="cmd3"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -850,7 +850,7 @@ else if(aa==7)
 	
 else if(aa==8)
 {
-	httpd_cmd.command="cmd5"
+	httpd_cmd.command="cmd4"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
