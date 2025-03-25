@@ -1049,11 +1049,11 @@ RMSh=0.0,RMSp=0.0;
 if(WSsocket.readyState==1)
 {
 	//console.log(event.data);
-	
+	console.log(event.data);
 try {
 	json_data = JSON.parse(event.data);
-	
 	console.log(json_data);
+	
 	} catch (e) {
 		
 		console.log(e.message);
