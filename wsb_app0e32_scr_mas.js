@@ -19,7 +19,7 @@ sideset = $(".sideset");
 pmain = $(".pmain");
 
 var gateway = 'wss://weather32app.bilymo.keenetic.pro/ws'
-//var WSsocket;
+var WSsocket;
 //var GuageMeter;
 function ReconnectWebSocket() 
 {
