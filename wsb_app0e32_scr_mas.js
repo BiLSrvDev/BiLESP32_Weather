@@ -1,4 +1,4 @@
-// upda8a4
+// upda8a5
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 
@@ -650,9 +650,9 @@ else if(aa==8)
 }
 console.log("WSsocket.readyState "+WSsocket.readyState);
 
-if (WSsocket.readyState === 1) {
+if (WSsocket.readyState === 1) 
+{
 	WSsocket.send(JSON.stringify(httpd_cmd));
-	return;
 }
 else
 {ReconnectWebSocket();}
