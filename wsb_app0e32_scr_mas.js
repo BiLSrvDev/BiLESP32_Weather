@@ -1,4 +1,4 @@
-// upda8a5
+// upda8a6
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 
@@ -652,6 +652,7 @@ console.log("WSsocket.readyState "+WSsocket.readyState);
 
 if (WSsocket.readyState === 1) 
 {
+	state_online(true);
 	WSsocket.send(JSON.stringify(httpd_cmd));
 }
 else
