@@ -611,7 +611,7 @@ else if(aa==3)
 	
 else if(aa==4)
 {
-	httpd_cmd.command="get_sens"
+	httpd_cmd.command="1"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -619,7 +619,7 @@ else if(aa==4)
 	
 else if(aa==5)
 {
-	httpd_cmd.command="cmd1"
+	httpd_cmd.command="2"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -627,7 +627,7 @@ else if(aa==5)
 	
 else if(aa==6)
 {
-	httpd_cmd.command="cmd2"
+	httpd_cmd.command="3"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -635,7 +635,7 @@ else if(aa==6)
 	
 else if(aa==7)
 {
-	httpd_cmd.command="cmd3"
+	httpd_cmd.command="4"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -643,7 +643,7 @@ else if(aa==7)
 	
 else if(aa==8)
 {
-	httpd_cmd.command="cmd4"
+	httpd_cmd.command="5"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
@@ -778,7 +778,7 @@ else
 	
 $('.mcu_tus').text(json_data.time[0].toString());
 $('.ptime').text(json_data.time[1].toString());
-$(".srvmode").text(json_data.data[0].toString());
+$(".srvmode").text(json_data.rd_fw[0].toString());
 
 //	2.4 temp_json["sensors"]
 //
