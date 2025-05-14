@@ -1,4 +1,4 @@
-// upda8a6
+// upda9a1
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 
@@ -648,7 +648,6 @@ else if(aa==8)
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
-console.log("WSsocket.readyState "+WSsocket.readyState);
 
 if (WSsocket.readyState === 1) 
 {
@@ -656,7 +655,7 @@ if (WSsocket.readyState === 1)
 	WSsocket.send(JSON.stringify(httpd_cmd));
 }
 else
-{ReconnectWebSocket();}
+{	state_online(false);ReconnectWebSocket();}
 	
 }
 
@@ -871,8 +870,13 @@ function refr_rtc() {
 
 		if($('input[name="autmp"]').is(':checked'))
 		{
-			sub_grad(0);
-    		console.log("refr_rtc");
+    		if (WSsocket.readyState === 1) 
+			{
+				state_online(true);
+				WSsocket.send(JSON.stringify(httpd_cmd));
+			}
+			else
+			{	state_online(false);ReconnectWebSocket();}
 		}
 }
 
