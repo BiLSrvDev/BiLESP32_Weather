@@ -584,32 +584,9 @@ function sub_grad(aa)
 //rs = setInterval(refr_rtc, 3000);
 if(aa==0)
 	httpd_cmd.command="1"
+
 	
 else if(aa==1)
-{
-	httpd_cmd.command="upd_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
-}
-	
-else if(aa==2)
-{
-	httpd_cmd.command="rd_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
-}
-	
-else if(aa==8)
-{
-	httpd_cmd.command="sw_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
-}
-	
-else if(aa==3)
 {
 	httpd_cmd.command="1"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
@@ -617,7 +594,7 @@ else if(aa==3)
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
-else if(aa==4)
+else if(aa==2)
 {
 	httpd_cmd.command="2"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
@@ -625,7 +602,7 @@ else if(aa==4)
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
-else if(aa==5)
+else if(aa==3)
 {
 	httpd_cmd.command="3"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
@@ -633,7 +610,7 @@ else if(aa==5)
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
-else if(aa==6)
+else if(aa==4)
 {
 	httpd_cmd.command="4"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
@@ -641,14 +618,38 @@ else if(aa==6)
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
-else if(aa==7)
+else if(aa==5)
 {
 	httpd_cmd.command="5"
 	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
 	//console.log(url1);
 	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
+	
+else if(aa==6)
+{
+	httpd_cmd.command="sw_fw"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+else if(aa==9)
+{
+	httpd_cmd.command="upd_fw"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
+	
+else if(aa==10)
+{
+	httpd_cmd.command="rd_fw"
+	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
+	//console.log(url1);
+	//fetch1(url1, "GET", TxMAINAJAX, 10);
+}
 
+	
 if (WSsocket.readyState === 1) 
 {
 	state_online(true);
