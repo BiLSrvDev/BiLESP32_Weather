@@ -583,7 +583,7 @@ function sub_grad(aa)
 //console.log(WSsocket.readyState);
 //rs = setInterval(refr_rtc, 3000);
 if(aa==0)
-	httpd_cmd.command="get_sens"
+	httpd_cmd.command="1"
 	
 else if(aa==1)
 {
