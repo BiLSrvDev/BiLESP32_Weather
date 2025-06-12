@@ -24,6 +24,7 @@ var WSsocket;
 function ReconnectWebSocket() 
 {
 	console.log("Reconnect")
+	state_online(false);
 	WSsocket.close();
 	WSsocket = new WebSocket(gateway);
 	return WSsocket;
@@ -554,11 +555,6 @@ if(WSsocket.readyState!=1)
 
 }); 
 
-function smgh() {
-    if (!device.mobile()) {
-        $(".bt0st").click();
-    }
-}
 
 
 function sub_init()
@@ -571,17 +567,6 @@ ReconnectWebSocket();
 
 function sub_grad(aa)
 {
-//https://javascriptcompressor.com/
-//gaugeArr[1].update({ value: '47' });
-
-					/*$('canvas').attr({value:'51'})
-					/$('canvas').attr({width:'100',height:'150'});*/
-					
-					/*guagelm75_t.attr('data-value','47');guagelm75_t.attr('data-width','100');
-					guagelm75_t.attr('data-height','150');
-					guagelm75_t.attr('data-value','47');*/
-//console.log(WSsocket.readyState);
-//rs = setInterval(refr_rtc, 3000);
 if(aa==0)
 	httpd_cmd.command="1"
 
@@ -589,75 +574,49 @@ if(aa==0)
 else if(aa==1)
 {
 	httpd_cmd.command="1"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==2)
 {
 	httpd_cmd.command="2"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==3)
 {
 	httpd_cmd.command="3"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==4)
 {
 	httpd_cmd.command="4"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==5)
 {
 	httpd_cmd.command="5"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==6)
 {
 	httpd_cmd.command="sw_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 else if(aa==9)
 {
 	httpd_cmd.command="upd_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 	
 else if(aa==10)
 {
 	httpd_cmd.command="rd_fw"
-	//url1 = "/get_cmd_srv_io.json?n=" + encodeURIComponent(JSON.stringify(httpd_cmd)) + "&";
-	//console.log(url1);
-	//fetch1(url1, "GET", TxMAINAJAX, 10);
 }
 
 	
 if (WSsocket.readyState === 1) 
 {
-	state_online(true);
-	WSsocket.send(JSON.stringify(httpd_cmd));
+	state_online(true);WSsocket.send(JSON.stringify(httpd_cmd));
 }
 else
 {	state_online(false);ReconnectWebSocket();}
-	
 }
 
 
