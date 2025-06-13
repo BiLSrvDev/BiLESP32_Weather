@@ -755,10 +755,8 @@ $.each(cmd_descr, function( index, value ) {
 		break;
 	}
 });
-	
 $('.mcu_tus').text(json_data.time[0].toString());
 $('.ptime').text(json_data.time[1].toString());
-$(".srvmode").text(json_data.rd_fw.toString());
 
 //	2.4 temp_json["sensors"]
 //
