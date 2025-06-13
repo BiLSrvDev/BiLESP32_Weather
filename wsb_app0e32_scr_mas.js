@@ -1,6 +1,7 @@
-// upda9a1
+// upda9a2
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
+// function onMessage(event) with 722
 
 var sideset, pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
 var CanvGaugeArrT = [];
