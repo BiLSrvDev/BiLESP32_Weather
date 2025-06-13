@@ -746,6 +746,16 @@ else
 //
 //	2.2 Times from mcu
 //
+if (json_data["time"]) 
+{
+	$('.mcu_tus').text(json_data.time[0].toString());
+	$('.ptime').text(json_data.time[1].toString());
+}
+
+//	2.4 temp_json["sensors"]
+//
+if (json_data["rd_fw"]) 
+{
 cmd=parseInt(json_data.rd_fw.val(), 10);
 
 $.each(cmd_descr, function( index, value ) {
@@ -755,13 +765,6 @@ $.each(cmd_descr, function( index, value ) {
 		break;
 	}
 });
-$('.mcu_tus').text(json_data.time[0].toString());
-$('.ptime').text(json_data.time[1].toString());
-
-//	2.4 temp_json["sensors"]
-//
-if (json_data["rd_fw"]) 
-{
 
 if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data[1].toString())!=String("NULL")) 
 {
