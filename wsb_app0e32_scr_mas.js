@@ -762,7 +762,8 @@ cmd=parseInt(json_data.rd_fw.toString(), 16);
 $.each(cmd_descr, function( index, value ) {
 	if(cmd==parseInt(index, 16))
 	{
-		$(".srvmode").text(value);
+		console.log(value.toString());
+		$(".srvmode").text(value.toString());
 		return true;
 	}
 });
@@ -779,7 +780,7 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 //
 if (json_data["sensor_data"]) 
 {
-
+console.log("if (json_data[sensor_data])");
 //
 //	2.4.1 CRC
 //
