@@ -763,7 +763,7 @@ $.each(cmd_descr, function( index, value ) {
 	if(cmd==parseInt(index, 16))
 	{
 		$(".srvmode").text(value);
-		break;
+		return true;
 	}
 });
 
