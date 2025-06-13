@@ -777,7 +777,7 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 //
 //	2.4 temp_json["sensors"]
 //
-if (json_data["sensors"]) 
+if (json_data["sensor_data"]) 
 {
 
 //
