@@ -757,7 +757,7 @@ if (json_data["time"])
 //
 if (json_data["rd_fw"]) 
 {
-cmd=parseInt(json_data.rd_fw.val(), 10);
+cmd=parseInt(json_data.rd_fw.toString(), 10);
 
 $.each(cmd_descr, function( index, value ) {
 	if(cmd==parseInt(index, 16))
@@ -772,7 +772,6 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 	$("#esp_urx").val(String(json_data.data[1])+"\r\n");
 	console.log("ok!");
 }
-
 };
 	
 //
