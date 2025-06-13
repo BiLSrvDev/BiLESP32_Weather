@@ -7,6 +7,17 @@ var CanvGaugeArrT = [];
 var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
+var cmd_descr = {
+  "0xA0F0": "WSB_CMD_TXRX_DEFAULT",
+  "0xA0F1": "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  "0xA0F2": "WSB_CMD_TXRX_DEFAULT",
+  "0xA0F3": "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  "0xA0F4": "WSB_CMD_TXRX_DEFAULT",
+  "0xA0F5": "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  "0xA0F6": "WSB_CMD_GET_KEY",
+  "0xA0F7": "WSB_CMD_TX_MAX"
+};
+
 
 var httpd_cmd = 
 {
@@ -710,8 +721,9 @@ function onError(event)
 function onMessage(event)
 {
 arrbufcrc="";
+arrtemp="";
 tmpf=0.0;
-ind=0,j=0,crc16_int=0;
+ind=0,j=0,cmd=0,crc16_int=0;
 Pdat=0.0,RMSt=0.0,
 RMSh=0.0,RMSp=0.0;
 //
@@ -732,12 +744,21 @@ try {
 else
 	return 0;
 //
-//	2.3 Times from mcu
+//	2.2 Times from mcu
 //
+cmd=parseInt(json_data.rd_fw.val(), 10);
+
+$.each(cmd_descr, function( index, value ) {
+	if(cmd==parseInt(index, 16))
+	{
+		$(".srvmode").text(value);
+		break;
+	}
+});
 	
 $('.mcu_tus').text(json_data.time[0].toString());
 $('.ptime').text(json_data.time[1].toString());
-$(".srvmode").text(json_data.rd_fw[0].toString());
+$(".srvmode").text(json_data.rd_fw.toString());
 
 //	2.4 temp_json["sensors"]
 //
