@@ -757,7 +757,7 @@ if (json_data["time"])
 //
 if (json_data["rd_fw"]) 
 {
-cmd=parseInt(json_data.rd_fw.toString(), 10);
+cmd=parseInt(json_data.rd_fw.toString(), 16);
 
 $.each(cmd_descr, function( index, value ) {
 	if(cmd==parseInt(index, 16))
