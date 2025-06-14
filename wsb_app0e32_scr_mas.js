@@ -11,10 +11,10 @@ var CanvGaugeArrOther = [];
 var cmd_descr = {
   "0xA0F0": "WSB_CMD_TXRX_DEFAULT",
   "0xA0F1": "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  "0xA0F2": "WSB_CMD_TXRX_DEFAULT",
-  "0xA0F3": "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  "0xA0F4": "WSB_CMD_TXRX_DEFAULT",
-  "0xA0F5": "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  "0xA0F2": "WSB_CMD_TX_CFG_TEMPERATURE",
+  "0xA0F3": "WSB_CMD_RX_CFG_TEMPERATURE",
+  "0xA0F4": "WSB_CMD_RX_CFG_SLAVE",
+  "0xA0F5": "WSB_CMD_TX_CFG_SLAVE",
   "0xA0F6": "WSB_CMD_GET_KEY",
   "0xA0F7": "WSB_CMD_TX_MAX"
 };
@@ -760,6 +760,8 @@ if (json_data["rd_fw"])
 cmd=parseInt(json_data.rd_fw.toString(), 16);
 
 $.each(cmd_descr, function( index, value ) {
+	
+console.log(index+" "+value);
 	if(cmd==parseInt(index, 16))
 	{
 		console.log(value.toString());
