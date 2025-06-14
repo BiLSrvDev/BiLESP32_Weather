@@ -782,15 +782,14 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 //
 if (json_data["sensor_data"]) 
 {
-console.log("if (json_data[sensor_data])");
 //
 //	2.4.1 CRC
 //
 if (json_data["crc16"]) 
 {
-	arrbufcrc=[].concat(json_data.sensors).concat(json_data.time);
-	crc16_int=parseInt(json_data.crc16, 16);
-	//console.log("crc16_int"+crc16_int);
+	arrbufcrc=[].json_data.sensor_data.copy();
+	crc16_int=parseInt(json_data.sensor_data[42], 16);
+	console.log("arrbufcrc"+arrbufcrc);
 
 	if(crc16(arrbufcrc,crc16_int) != true || isNaN(crc16_int) )
 	{
