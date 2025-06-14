@@ -9,14 +9,14 @@ var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
 var cmd_descr = {
-  "0xA0F0": "WSB_CMD_TXRX_DEFAULT",
-  "0xA0F1": "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  "0xA0F2": "WSB_CMD_TX_CFG_TEMPERATURE",
-  "0xA0F3": "WSB_CMD_RX_CFG_TEMPERATURE",
-  "0xA0F4": "WSB_CMD_RX_CFG_SLAVE",
-  "0xA0F5": "WSB_CMD_TX_CFG_SLAVE",
-  "0xA0F6": "WSB_CMD_GET_KEY",
-  "0xA0F7": "WSB_CMD_TX_MAX"
+  "0": "WSB_CMD_TXRX_DEFAULT",
+  "1": "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  "2": "WSB_CMD_TX_CFG_TEMPERATURE",
+  "3": "WSB_CMD_RX_CFG_TEMPERATURE",
+  "4": "WSB_CMD_RX_CFG_SLAVE",
+  "5": "WSB_CMD_TX_CFG_SLAVE",
+  "6": "WSB_CMD_GET_KEY",
+  "7": "WSB_CMD_TX_MAX"
 };
 
 
@@ -762,7 +762,7 @@ cmd=parseInt(json_data.rd_fw.toString(), 16);
 $.each(cmd_descr, function( index, value ) {
 	
 console.log(index+" "+value);
-	if(cmd==parseInt(index, 16))
+	if(cmd==parseInt((index+41200), 16))
 	{
 		console.log(value.toString());
 		$(".srvmode").text(value.toString());
@@ -782,6 +782,7 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 //
 if (json_data["sensor_data"]) 
 {
+		console.log("(json_data[sensor_data])");
 //
 //	2.4.1 CRC
 //
