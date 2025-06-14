@@ -16,59 +16,29 @@
 <script src="https://bilsrv.github.io/WSBSrvWeatherPub/GaugeMeter.js">
 </script>
 <style>
-
 </style>
 <title>WSB_Server</title>
 </head>
 <body>
-
-
 <header class="navbar sticky-top bg-dark bg-gradient flex-md-nowrap p-0 shadow">
-<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path> </symbol> </svg> 
 <p class="navbar-brand col-md-3 col-lg-2 me-0 px-3 text-warning bg-secondary">WSB_Server
 <button type="button" class="btn btn-primary btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button></p>
-
 <ul class="navbar-nav flex-row"> 
 <li class="nav-item text-nowrap">
 <span class="navbar text-white px-5 ">Статус сервера:
 <span class="navbar pst0 badge lead text-white"></span>
 </li>
 <li class="nav-item text-nowrap px-3"> 
-<button class="btn btn-primary collapsed bt0st nav-link px-3 text-white bg-info navbar-toggler" type="button" data-bs-toggle="collapse" type="button" data-bs-target="#sidebar"  aria-label="Toggle navigation"> 
+<button class="btn btn-primary collapsed bt0st nav-link px-3 text-white bg-info navbar-toggler" type="button" data-bs-toggle="collapse" type="button" data-bs-target="#sidebar_sensor"  aria-label="Toggle navigation"> 
 <span class="navbar-toggler-icon">
 </button> 
 </li> </ul> <div id="navbarSearch" class="navbar-search w-100 collapse"> <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search"></span></div> 
 </header>  
 <div class="container-fluid h-100"> 
 <div class="row justify-content-center h-100">
-<div class="sidebar border border-right col-sm-4 col-xl-3 bg-light align-items-center bg-body-tertiary" id="sidebar"> <ul class="nav flex-column"> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#house-fill"></use></svg>
-Dashboard
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark"></use></svg>
-Orders
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#cart"></use></svg>
-Products
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#people"></use></svg>
-Customers
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#graph-up"></use></svg>
-Reports
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#puzzle"></use></svg>
-Integrations
-</a> </li> </ul> <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase"> <span>Saved reports</span> <a class="link-secondary" href="#" aria-label="Add a new report"> <svg class="bi" aria-hidden="true"><use xlink:href="#plus-circle"></use></svg> </a> </h6> <ul class="nav flex-column mb-auto"> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
-Current month
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
-Last quarter
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
-Social engagement
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#file-earmark-text"></use></svg>
-Year-end sale
-</a> </li> </ul> <hr class="my-3"> <ul class="nav flex-column mb-auto"> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#gear-wide-connected"></use></svg>
-Settings
-</a> </li> <li class="nav-item"> <a class="nav-link d-flex align-items-center gap-2" href="#"> <svg class="bi" aria-hidden="true"><use xlink:href="#door-closed"></use></svg>
-Sign out
-</a> </li> </ul> </div>
-
+<div class="sidebar border border-right col-md-4 col-xl-3 bg-light align-items-center bg-body-tertiary" style="background-color:lightgray" id="sidebar_sensor"> 
+</div>
 <main class="pmain bg-secondary text-white col-sm-auto col-md-8 col-xl-9 px-3 min-vh-100">
-
 </main></div></div></body></html>
 <script type="text/javascript">$(".pmain").load("https://bilsrvdev.github.io/BiLESP32_Weather/main_app0e32_act.html").html(),$("#sidebar_sensor").load("https://bilsrvdev.github.io/BiLESP32_Weather/side_app0e32_act.html").html()
 </script>

@@ -37,7 +37,7 @@ function ReconnectWebSocket()
 {
 	console.log("Reconnect")
 	state_online(false);
-	WSsocket.close();
+//WSsocket.close();
 	WSsocket = new WebSocket(gateway);
 	return WSsocket;
 };
