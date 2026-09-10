@@ -9,16 +9,26 @@ var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
 var cmd_descr = {
-  "0": "WSB_CMD_TXRX_DEFAULT",
-  "1": "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  "2": "WSB_CMD_TX_CFG_TEMPERATURE",
-  "3": "WSB_CMD_RX_CFG_TEMPERATURE",
-  "4": "WSB_CMD_RX_CFG_SLAVE",
-  "5": "WSB_CMD_TX_CFG_SLAVE",
-  "6": "WSB_CMD_GET_KEY",
-  "7": "WSB_CMD_TX_MAX"
+  0: "WSB_CMD_TXRX_DEFAULT",
+  1: "WSB_CMD_TXRX_DATA_TEMPERATURE",
+  2: "WSB_CMD_TX_CFG_TEMPERATURE",
+  3: "WSB_CMD_RX_CFG_TEMPERATURE",
+  4: "WSB_CMD_RX_CFG_SLAVE",
+  5: "WSB_CMD_TX_CFG_SLAVE",
+  6: "WSB_CMD_GET_KEY",
+  7: "WSB_CMD_TX_MAX"
 };
-
+const CMD_MAP = {
+  0: "1",
+  1: "1",
+  2: "2",
+  3: "3",
+  4: "4",
+  5: "5",
+  6: "sw_fw",
+  9: "upd_fw",
+  10: "rd_fw"
+};
 
 var httpd_cmd = 
 {
@@ -579,49 +589,9 @@ ReconnectWebSocket();
 
 function sub_grad(aa)
 {
-if(aa==0)
-	httpd_cmd.command="1"
-
-	
-else if(aa==1)
-{
-	httpd_cmd.command="1"
+if (CMD_MAP[aa] !== undefined) {
+    httpd_cmd.command = CMD_MAP[aa];
 }
-	
-else if(aa==2)
-{
-	httpd_cmd.command="2"
-}
-	
-else if(aa==3)
-{
-	httpd_cmd.command="3"
-}
-	
-else if(aa==4)
-{
-	httpd_cmd.command="4"
-}
-	
-else if(aa==5)
-{
-	httpd_cmd.command="5"
-}
-	
-else if(aa==6)
-{
-	httpd_cmd.command="sw_fw"
-}
-else if(aa==9)
-{
-	httpd_cmd.command="upd_fw"
-}
-	
-else if(aa==10)
-{
-	httpd_cmd.command="rd_fw"
-}
-
 	
 if (WSsocket.readyState === 1) 
 {
