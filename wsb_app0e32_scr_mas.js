@@ -1,4 +1,4 @@
-// upda9a2
+// upda1a
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 // function onMessage(event) with 722
@@ -6,11 +6,17 @@
 /* ==========================================================================
  *  1. Configuration
  * ========================================================================== */
-var sideset, pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
-var CanvGaugeArrT = [];
-var CanvGaugeArrP = [];
-var CanvGaugeArrH = [];
-var CanvGaugeArrOther = [];
+const WS_GATEWAY       = 'wss://weather32app.bilymo.keenetic.pro/ws';
+const REFRESH_INTERVAL = 2000;   // ms — automatic sensor poll
+const RECONNECT_DELAY  = 1000;   // ms — WebSocket retry backoff
+
+const SENSOR_REQUEST = Object.freeze({
+    content_type: 'application/json',
+    command:      'get_sens',
+    crc16:        'ANY',
+});
+
+
 var CMD_DESCRIPTIONS = {
   0: "WSB_CMD_TXRX_DEFAULT",
   1: "WSB_CMD_TXRX_DATA_TEMPERATURE",
@@ -155,7 +161,7 @@ function refreshSensorData() {
  * Send an arbitrary command code (used by UI controls).
  * Maps the numeric code through CMD_MAP before sending.
  */
-function <strong>sendCommandByCode</strong>(code) {
+function sub_grad(code) {
     if (CMD_MAP[code] !== undefined) {
         SENSOR_REQUEST.command = CMD_MAP[code];
     }
@@ -621,13 +627,20 @@ function verifyCrc16(chunks, expectedCrc) {
     const POLYNOMIAL = 0x1021;
     let crc = 0xFFFFFFFF;
 
-    for (let c = 0; c < chunks.length; c++) {
+    /*for (let c = 0; c < chunks.length; c++) {
         const chunk = chunks[c];
         for (let i = 0; i < chunk.length; i++) {
             crc ^= (chunk.charCodeAt(i) << 8) & 0x0FFFFFFF;
             crc  = ((crc & 0x8000) ? (crc << 1) ^ POLYNOMIAL : crc << 1) & 0x0FFFFFFF;
         }
     }
+	*/
+	$.each(chunks, function(index, element) {
+        for (let  j = 0; j < element.length; j++) {
+			crc ^= (element.charCodeAt(j) << 8) & 0x0FFFFFFF;//charCodeAt
+			crc = (crc & 0x8000 ? (crc << 1) ^ POLY_D : crc << 1) & 0x0FFFFFFF;
+		}
+	});
 
     return crc === expectedCrc;
 }
