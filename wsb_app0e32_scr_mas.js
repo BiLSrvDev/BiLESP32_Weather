@@ -3,12 +3,15 @@
 // reverse panelki dlya debug 
 // function onMessage(event) with 722
 
+/* ==========================================================================
+ *  1. Configuration
+ * ========================================================================== */
 var sideset, pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
 var CanvGaugeArrT = [];
 var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
-var cmd_descr = {
+var CMD_DESCRIPTIONS = {
   0: "WSB_CMD_TXRX_DEFAULT",
   1: "WSB_CMD_TXRX_DATA_TEMPERATURE",
   2: "WSB_CMD_TX_CFG_TEMPERATURE",
@@ -30,1020 +33,659 @@ const CMD_MAP = {
   10: "rd_fw"
 };
 
-var httpd_cmd = 
-{
-	content_type: "application/json",
-	command: "get_sens",
-	crc16: "ANY"
-}
-var temp_json = {};
-sideset = $(".sideset");
-pmain = $(".pmain");
+// Physical constants and sensor layout
+const PRESSURE_PA_TO_MMHG = 0.750062;
+const TEMP_SENSOR_COUNT   = 10;
+const HUM_SENSOR_COUNT    = 7;
+const PRESS_SENSOR_COUNT  = 4;
+const CRC_INDEX           = 42;
 
-var gateway = 'wss://weather32app.bilymo.keenetic.pro/ws'
-var WSsocket;
-//var GuageMeter;
-function ReconnectWebSocket() 
-{
-	console.log("Reconnect")
-	state_online(false);
-//WSsocket.close();
-	WSsocket = new WebSocket(gateway);
-	return WSsocket;
-};
+/* ---- Gauge configuration factories --------------------------------------- */
 
-$('body').delay(1000).queue(function() {
-WSsocket = new WebSocket(gateway);
-maOBJ = $('*').get();
-unit="";
-
-$("canvas[data-type='linear-gauge']").each(function(index){	
-	
-    CanvGaugeArrT.push(new LinearGauge({
-    renderTo: $( this ).attr('id'),
-    width: 100,
-    height: 300,
-	colorPlate: "black",
-	colorUnits: "black",
-	colorNeedle: "#222",
-	colorNeedleEnd: "",
-	colorBar: "#f5f5f5",
-	colorTitle: "blue",
-    colorPlate: "#ccc",
-	colorPlateEnd: "#ccc",
-	colorBarStroke: "black",
-	borderRadius: "20",
-	borders: "true",
-	minValue: -50,
-	maxValue: 50,
-	minorTicks: 11,
-	majorTicks: ['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
-    colorNumbers: ['cyan','blue','blue','blue','black','black','black','green','green','#CE7E00','red'],
-    colorMajorTicks: ['yellow','green','blue','blue','black','black','black','black','black','black','black'],
-    fontNumbersSize: "30",
-	fontValueSize: "45",
-	fontTitleSize: "35",
-	fontUnitsSize: "45",
-	value: 0,
-	units: '°C',
-	title: String($(this).attr('id')),
-	animationRule: 'elastic',
-	animationDuration: 250
-}).draw());
-});
-try
-{
-$("canvas[data-type='radial-gauge']").each(function(index){	
-	
-	if($(this).attr('class')=="canvasP1")
-	{
-	//console.log("Elem "+$(this).attr('id'))
-	unit="ммРст"
-    CanvGaugeArrP.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 770,
-    majorTicks: [
-        "0",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "740",
-        "750",
-        "760",
-        "770"
-    ],
-    minorTicks: 10,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 740,
-            "to": 760,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-	 }
-	
-	if($(this).attr('class')=="canvasH1")
-	{
-	//console.log("Elem "+$(this).attr('id'))
-	unit="%"
-    CanvGaugeArrH.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 100,
-    majorTicks: [
-        "0",
-        "10",
-        "20",
-        "30",
-        "40",
-        "50",
-        "60",
-        "70",
-        "80",
-        "90",
-        "100"
-    ],
-    minorTicks: 5,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 60,
-            "to": 100,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-	}).draw());
-	}
-
-	
-if($(this).attr('id')=="GauAvTemp")
-{
-	//console.log("Elem "+$(this).attr('id'))
-	unit=" C"
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: -50,
-    maxValue: 50,
-	majorTicks:	['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
-    minorTicks: 5,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": -50,
-            "to": 0,
-            "color": "rgba(0,0, 255, .3)"
-        },
-        {
-            "from": 0,
-            "to": 50,
-            "color": "rgba(255, 0, 0, .3)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-if($(this).attr('id')=="GauAvHum")
-{
-	unit = "%";
-	//console.log("Elem "+$(this).attr('id'))
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 100,
-    majorTicks: [
-        "0",
-        "10",
-        "20",
-        "30",
-        "40",
-        "50",
-        "60",
-        "70",
-        "80",
-        "90",
-        "100"
-    ],
-    minorTicks: 5,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 60,
-            "to": 100,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-	
-	
-if($(this).attr('id')=="GauAvPress")
-{
-	unit="ммРст"
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 770,
-    majorTicks: [
-        "0",
-        "200",
-        "300",
-        "400",
-        "500",
-        "600",
-        "700",
-        "740",
-        "750",
-        "760",
-        "770"
-    ],
-    minorTicks: 10,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 740,
-            "to": 760,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-if($(this).attr('id')=="GauAirQ" || $(this).attr('id')=="bme680_gr")
-{
-	unit = "IAQ";
-	//console.log("Elem "+$(this).attr('id'))
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 500,
-    majorTicks: [
-        "0",
-        "50",
-        "100",
-        "150",
-		"200",
-		"250",
-        "300",
-		"350",
-        "400",
-		"450",
-        "500",
-    ],
-    minorTicks: 10,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 0,
-            "to": 50,
-            "color": "#00FF00",
-        },
-		{
-            "from": 51,
-            "to": 150,
-            "color": "#3CB371"
-        },
-		{
-            "from": 101,
-            "to": 150,
-            "color": "#FFD700"
-        },
-		{
-            "from": 151,
-            "to": 200,
-            "color": "#FF8C00"
-        },
-		{
-            "from": 201,
-            "to": 300,
-            "color": "#FF0000"
-        },
-		{
-            "from": 301,
-            "to": 500,
-            "color": "#8B0000"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-	
-if($(this).attr('id')=="ens160_tvoc") 
-{
-	unit = "ppb";
-	//console.log("Elem "+$(this).attr('id'))
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 65000,
-    majorTicks: [
-        "0",
-        "5000",
-        "10500",
-        "16000",
-        "21500",
-        "27000",
-        "32500",
-        "38000",
-        "43500",
-        "49000",
-		"53000",
-		"58500",
-		"62500",
-        "65000"
-    ],
-    minorTicks: 14,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 49000,
-            "to": 65000,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-if($(this).attr('id')=="ens160_eco2")
-	{
-	unit = "ppm";
-	//console.log("Elem "+$(this).attr('id'))
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 400,
-    maxValue: 65000,
-    majorTicks: [
-        "400",
-        "5000",
-        "10500",
-        "16000",
-        "21500",
-        "27000",
-        "32500",
-        "38000",
-        "43500",
-        "49000",
-		"53000",
-		"58500",
-		"62500",
-        "65000"
-    ],
-    minorTicks: 14,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 49000,
-            "to": 65000,
-            "color": "rgba(200, 50, 50, .75)"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-	}
-
-	
-	
-if($(this).attr('id')=="ens160_AIQ")
-{
-	unit = "AQI-UBA";
-	//console.log("Elem "+$(this).attr('id'))
-    CanvGaugeArrOther.push(new RadialGauge({
-	renderTo: $( this ).attr('id'),
-    title: String($(this).attr('id')),
-    width: 150,
-    height: 150,
-    units: unit,
-    minValue: 0,
-    maxValue: 5,
-    majorTicks: [
-        "0",
-        "1",
-        "2",
-        "3",
-		"4",
-		"5"
-    ],
-    minorTicks: 10,
-    strokeTicks: true,
-    highlights: [
-        {
-            "from": 0,
-            "to": 1,
-            "color": "#00FF00",
-        },
-        {
-            "from": 1,
-            "to": 2,
-            "color": "#3CB371",
-        },
-		{
-            "from": 2,
-            "to": 3,
-            "color": "#FFD700"
-        },
-		{
-            "from": 3,
-            "to": 4,
-            "color": "#FF0000"
-        },
-		{
-            "from": 4,
-            "to": 5,
-            "color": "#8B0000"
-        }
-    ],
-    colorPlate: "#fff",
-    borderShadowWidth: 0,
-    borders: false,
-    needleType: "arrow",
-    needleWidth: 2,
-    needleCircleSize: 7,
-    needleCircleOuter: true,
-    needleCircleInner: false,
-    animationDuration: 1500,
-    animationRule: "linear"
-}).draw());
-}
-	
-});
-}
-catch (e) {
-		console.log(e.message);
-		//console.log(CanvGaugeArrR);
-		return 0;
-}
-
-if(WSsocket.readyState!=1)
-{
-	initWebSocket();
-}
-
-}); 
-
-
-
-function sub_init()
-{
-//
-initWebSocket();
-ReconnectWebSocket();
-// Initialize GaugeMeter plugin
-}
-
-function sub_grad(aa)
-{
-if (CMD_MAP[aa] !== undefined) {
-    httpd_cmd.command = CMD_MAP[aa];
-}
-	
-if (WSsocket.readyState === 1) 
-{
-	state_online(true);WSsocket.send(JSON.stringify(httpd_cmd));
-}
-else
-{	state_online(false);ReconnectWebSocket();}
-}
-
-
-// https://learn.javascript.ru/websocket
-// event websocket
-// event.error
-// event.wasClean
-//   
-// event.code === 1000
-// event.reason === "работа закончена"
-// event.wasClean === true (закрыто чисто)
-//socket.readyState со значениями:
-//
-//0 – «CONNECTING»: соединение ещё не установлено,
-//1 – «OPEN»: обмен данными,
-//2 – «CLOSING»: соединение закрывается,
-//3 – «CLOSED»: соединение закрыто.
-
-// Make the function wait until the connection is made...
-// 
-//  waitForSocketConnection(socket, () => {
-//        socket.send(action.payload);
- // })
-function waitForSocketConnection(socket, callback)
-{
-    setTimeout(
-        function () {
-            if (socket.readyState === 1) {
-                console.log("Connection is made")
-                if (callback != null){
-                    callback();
-                }
-            } else {
-                console.log("wait for connection...")
-                if (callback != null)
-					waitForSocketConnection(socket, callback);
-            }
-        }, 5000); // wait 5 milisecond for the connection...
-}
-
-
-function initWebSocket()
-{
-	//console.log('Trying to open a WebSocket connection...');
-	
-	WSsocket.onopen = onOpen;
-	WSsocket.onclose = onClose;
-	WSsocket.onmessage = onMessage; // add this line
-	WSsocket.onerror = onError;
-	// socket.isConnected(); // or: socket.isConnected(function(connected) {});
-	// socket.listen(function(data) {});
-	// socket.remove(listenerCallback);
-	// socket.removeAll();
-}
-
-function onOpen(event)
-{
-	//console.log('ws opened');
-	state_online(true);
-}
-
-function onClose(event)
-{
-	// wasClean Returns a boolean value that Indicates whether or not the connection was cleanly closed.
-	// reason
-	// Returns an unsigned short containing the close code sent by the server.
-	state_online(false);
-	if (event.wasClean) 
-	{
-        console.log('Соединение закрыто чисто');
-	}
-	ReconnectWebSocket();
-	//waitForSocketConnection(WSsocket, ReconnectWebSocket());
-	console.log('ws close');
-	WSsocket.close();
-}
-
-function onError(event) 
-{
-	// only event
-	if(WSsocket.readyState==2 || WSsocket.readyState==3)
-	{
-		state_online(false);
-		ReconnectWebSocket();
-		console.log('ws error'+event);
-	}
-};
- 
-//	INPUT WSS MESSAGE
-
-function onMessage(event)
-{
-arrbufcrc="";
-arrtemp="";
-tmpf=0.0;
-ind=0,j=0,cmd=0,crc16_int=0;
-Pdat=0.0,RMSt=0.0,
-RMSh=0.0,RMSp=0.0;
-//
-//	2.1	Processing 'onMessage'
-//
-if(WSsocket.readyState==1)
-{
-	console.log(event.data);
-try {
-	json_data = JSON.parse(event.data);
-	console.log(json_data);
-	} catch (e) {
-		console.log(e.message);
-		console.log(event.data);
-		return 0;
-	}
-}
-else
-	return 0;
-//
-//	2.2 Times from mcu
-//
-if (json_data["time"]) 
-{
-	$('.mcu_tus').text(json_data.time[0].toString());
-	$('.ptime').text(json_data.time[1].toString());
-}
-
-//	2.3 temp_json["rd_fw"]
-//
-if (json_data["rd_fw"]) 
-{
-cmd=parseInt(json_data.rd_fw.toString(), 10);
-console.log("cmd "+cmd);
-$.each(cmd_descr, function( index, value ) {
-	
-console.log(index+" "+value);
-	if(cmd==parseInt((index+41200), 16))
-	{
-		console.log(value.toString());
-		$(".srvmode").text(value.toString());
-		return true;
-	}
+const RADIAL_GAUGE_BASE = Object.freeze({
+    width:              150,
+    height:             150,
+    strokeTicks:        true,
+    colorPlate:         '#fff',
+    borderShadowWidth:  0,
+    borders:            false,
+    needleType:         'arrow',
+    needleWidth:        2,
+    needleCircleSize:   7,
+    needleCircleOuter:  true,
+    needleCircleInner:  false,
+    animationDuration:  1500,
+    animationRule:      'linear',
 });
 
-if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data[1].toString())!=String("NULL")) 
-{
-	$("#esp_urx").val(String(json_data.data[1])+"\r\n");
-	console.log("ok!");
-}
-};
-	
-//
-//	2.4 temp_json["sensors"]
-//
-if (json_data["sensor_data"]) 
-{
-		console.log("(json_data[sensor_data])");
-//
-//	2.4.1 CRC
-//
-if (json_data["crc16"]) 
-{
-	arrbufcrc=[].json_data.sensor_data.copy();
-	crc16_int=parseInt(json_data.sensor_data[42], 16);
-	console.log("arrbufcrc"+arrbufcrc);
+/* ==========================================================================
+ *  2. Runtime state
+ * ========================================================================== */
 
-	if(crc16(arrbufcrc,crc16_int) != true || isNaN(crc16_int) )
-	{
-		console.log("crc16(arrbufcrc,crc16_int) ERROR! arrbufcrc",arrbufcrc,"crc16_int",crc16_int);
-		return 0;
-	}	
-	//for(i=0;i<json_data.time.length)
-	//	{arrbufcrc[i]=json_data.time[i];j++;}
-	//for(i=0;i<json_data.time.length)
-	//	{arrbufcrc[i]=json_data.time[i];}
-}
-else
-{return 0;}
-	
-	//
-	//	2.3 Scope RMS scope sensors
-	//
-	tmpf=1.0;
-	for(j=0;j<=9;j++)
-	{
-		if(parseFloat(json_data.sensors[j])<0)
-			tmpf=tmpf*(-1);
-	RMSt+=Math.abs(parseFloat(json_data.sensors[j]))
-	}
-	RMSt=RMSt*0.1*tmpf;
-	for(j=0;j<=6;j++)
-	{
-	RMSh+=parseFloat(json_data.sensors[j+10])
-		//console.log(RMSh)
-	}
-	RMSh=RMSh*0.14286;
-	for(j=0;j<=3;j++)
-	{
-	RMSp+=parseFloat(json_data.sensors[j+17])
-	}
-	RMSp=RMSp*0.25;
+let socket     = null;
+let formFields = [];
 
-	//console.log($("canvas[data-type='radial-gauge']"));
-	//console.log($("canvas[data-type='radial-gauge']").attr("i"));
-	if(parseInt(json_data.sensors[30],10))
-		$("#lm75_t1_chk").prop("checked", true);
-	else
-		$("#lm75_t1_chk").prop("checked", false);
-	if(parseInt(json_data.sensors[31],10))
-		$("#lm75_t2_chk").prop("checked", true);
-	else
-		$("#lm75_t2_chk").prop("checked", false);
-	
-	$("#bme280_DEW").val(((parseFloat(json_data.sensors[32],10)+parseFloat(json_data.sensors[33]))*0.5).toString().substring(0, 7));
-	$("#bme280_QNH").val(((parseFloat(json_data.sensors[34],10)+parseFloat(json_data.sensors[35]))*0.5).toString().substring(0, 7));
-	$("#bme280_ALT").val(((parseFloat(json_data.sensors[36],10)+parseFloat(json_data.sensors[37]))*0.5).toString().substring(0, 7));
-	
-	ENS_AIQf(parseInt(json_data.sensors[24],10));
-	
-	ind=0;
-
-	$(".progress-bar").each(function(index){
-		//$ = jQuery.noConflict();
-		txt=$(this).attr('class').toString().split(' ')[2];
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensors[26+ind],10).toString());
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensors[26+ind],10).toString());
-		$('.'+txt).css("width", Math.round((0.0244*parseInt(json_data.sensors[26+ind],10))).toString());
-		$('#'+txt).text(parseInt(json_data.sensors[26+ind],10).toString());
-		ind++
-	});
-console.log("Width "+Math.round((0.0244*parseInt(json_data.sensors[26+ind]))).toString()+"val "+parseInt(json_data.sensors[26+ind]))
-	
-	ind=0;
-//try {
-	$("canvas[data-type='linear-gauge']").each(function(index){
-
-		if($(this).attr('class')=="canvasT")
-		{
-		CanvGaugeArrT[ind].update({ value: parseFloat(json_data.sensors[ind]) });
-		ind++;
-		//if(index>8)
-		//{return false;}
-		}
-	});
-	
-	//console.log(CanvGaugeArrH);
-	//console.log(CanvGaugeArrP);
-	//console.log(RMSt);
-	//console.log(RMSh);
-	//console.log(RMSp);
-	
-	ind=0;j=0;
-	$("canvas[data-type='radial-gauge']").each(function(index){
-		if($(this).attr('id')=="GauAvTemp")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[0].update({ value: RMSt});
-		}
-		if($(this).attr('id')=="GauAvHum")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[1].update({ value: RMSh});
-		}
-		if($(this).attr('id')=="GauAvPress")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[2].update({ value: RMSp});
-		}
-		
-		if($(this).attr('class')=="canvasH1")
-		{
-			//if(index>6)
-			//	return false;
-			//console.log(CanvGaugeArrH[ind]," indH ",ind," class ",$(this).attr('class'));
-			CanvGaugeArrH[ind].update({ value: parseFloat(json_data.sensors[ind+10])});
-			ind++;
-		}
-		
-		if($(this).attr('class')=="canvasP1")
-		{
-			//console.log(CanvGaugeArrP[ind]," indP ",ind," class ",$(this).attr('class'));
-			//console.log(" Pdat "+Pdat+" jd_sens "+json_data.sensors[j+17]);
-			Pdat = (parseFloat(json_data.sensors[j+17])*0.750062).toFixed(2);
-			CanvGaugeArrP[j].update({ value: (parseFloat(json_data.sensors[j+17])*0.750062).toFixed(2)});
-			j++;
-		}
-		
-		if($(this).attr('id')=="GauAirQ")
-		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])));
-			
-			CanvGaugeArrOther[3].update({ value: rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])) });
-		}
-		if($(this).attr('id')=="bme680_gr")
-		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])));
-			CanvGaugeArrOther[4].update({ value: rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])) });
-		}
-			
-		if($(this).attr('id')=="ens160_tvoc")
-		{
-			CanvGaugeArrOther[5].update({ value: parseInt(json_data.sensors[22],10) });
-		}
-			
-		if($(this).attr('id')=="ens160_eco2")
-		{
-			CanvGaugeArrOther[6].update({ value: parseInt(json_data.sensors[23],10)});
-		}
-			
-		if($(this).attr('id')=="ens160_AIQ")
-		{
-			CanvGaugeArrOther[7].update({ value: parseInt(json_data.sensors[24],10)});
-		}
-	});
-}
-	
-
-	
+const gauges = {
+    linear:   [],   // LinearGauge — temperature strips
+    humidity: [],   // RadialGauge — % humidity
+    pressure: [],   // RadialGauge — mm Hg
+    byId:     {},   // DOM id -> RadialGauge (averages, air quality, TVOC …)
 };
 
+/* ==========================================================================
+ *  3. Bootstrap
+ * ========================================================================== */
+
+$(function () {
+    $('#esp_tx').val('wsbuser.prints(node.heap());');
+    $('#esp_urx').val('');
+    $('.bt0st').attr('value', 'off');
+    $('.navia').addClass('list-group-item list-group-item-action bg-light border');
+
+    formFields = $('*').get();
+
+    setTimeout(start, 1000);
+});
 
 
-function ftvall(cl) {
-    for (i = 0; i < maOBJ.length; i++) {
-        $("#" + maOBJ[i].name).val(cl);
-        $("#" + maOBJ[i].name)
-			.removeClass("is-invalid")
-			.html();
-        $("#" + maOBJ[i].name)
-			.removeClass("is-valid")
-			.html();
+function start() {
+    connectSocket();
+    createGauges();
+    setInterval(refreshSensorData, REFRESH_INTERVAL);
+}
+
+/* ==========================================================================
+ *  4. WebSocket plumbing
+ * ========================================================================== */
+
+function connectSocket() {
+    if (socket &&
+        (socket.readyState === WebSocket.OPEN ||
+         socket.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
+    socket = new WebSocket(WS_GATEWAY);
+    socket.addEventListener('open',    handleSocketOpen);
+    socket.addEventListener('close',   handleSocketClose);
+    socket.addEventListener('error',   handleSocketError);
+    socket.addEventListener('message', handleSocketMessage);
+}
+
+function scheduleReconnect() {
+    setTimeout(connectSocket, RECONNECT_DELAY);
+}
+
+function handleSocketOpen() {
+    setOnlineState(true);
+}
+
+function handleSocketClose(event) {
+    setOnlineState(false);
+    console.log(event.wasClean ? 'WebSocket closed cleanly'
+                               : 'WebSocket closed unexpectedly');
+    scheduleReconnect();
+}
+
+function handleSocketError(event) {
+    // The 'close' event will fire after this and handle reconnection.
+    console.error('WebSocket error', event);
+}
+
+/* ==========================================================================
+ *  5. Outgoing commands
+ * ========================================================================== */
+
+function sendSensorCommand() {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        setOnlineState(false);
+        scheduleReconnect();
+        return;
+    }
+    setOnlineState(true);
+    socket.send(JSON.stringify(SENSOR_REQUEST));
+}
+
+function refreshSensorData() {
+    if ($('input[name="autmp"]').is(':checked')) {
+        sendSensorCommand();
     }
 }
 
-function state_online(state) 
-{
-	if(state==true)
-	{$(".pst0").removeClass("bg-danger");$(".pst0").addClass("bg-success").text("ОК")}
-	else
-	{$(".pst0").removeClass("bg-success");$(".pst0").addClass("bg-danger").text("off")};
+/**
+ * Send an arbitrary command code (used by UI controls).
+ * Maps the numeric code through CMD_MAP before sending.
+ */
+function <strong>sendCommandByCode</strong>(code) {
+    if (CMD_MAP[code] !== undefined) {
+        SENSOR_REQUEST.command = CMD_MAP[code];
+    }
+    sendSensorCommand();
 }
 
 
-function fetch1(url, method, callback, time_out) {
-    //console.log(url);
-    var xhr = new XMLHttpRequest();
-    xhr.onloadend = function () {
-        callback(xhr.status, xhr.responseText);
+/* ==========================================================================
+ *  6. Gauge creation
+ * ========================================================================== */
+
+function createGauges() {
+    // Linear temperature gauges
+    $('canvas[data-type="linear-gauge"].canvasT').each(function () {
+        gauges.linear.push(
+            new LinearGauge(temperatureLinearGaugeConfig(this.id)).draw()
+        );
+    });
+
+    // Radial gauges
+    $('canvas[data-type="radial-gauge"]').each(function () {
+        const id  = this.id;
+        const cls = $(this).attr('class');
+        let   gauge = null;
+
+        switch (true) {
+            case cls === 'canvasP1':
+                gauge = new RadialGauge(pressureRadialGaugeConfig(id)).draw();
+                gauges.pressure.push(gauge);
+                break;
+
+            case cls === 'canvasH1':
+                gauge = new RadialGauge(humidityRadialGaugeConfig(id)).draw();
+                gauges.humidity.push(gauge);
+                break;
+
+            case id === 'GauAvTemp':
+                gauge = new RadialGauge(avgTemperatureGaugeConfig(id)).draw();
+                break;
+
+            case id === 'GauAvHum':
+                gauge = new RadialGauge(humidityRadialGaugeConfig(id)).draw();
+                break;
+
+            case id === 'GauAvPress':
+                gauge = new RadialGauge(pressureRadialGaugeConfig(id)).draw();
+                break;
+
+            case id === 'GauAirQ':
+            case id === 'bme680_gr':
+                gauge = new RadialGauge(airQualityGaugeConfig(id)).draw();
+                break;
+
+            case id === 'ens160_tvoc':
+                gauge = new RadialGauge(tvocGaugeConfig(id)).draw();
+                break;
+
+            case id === 'ens160_eco2':
+                gauge = new RadialGauge(eco2GaugeConfig(id)).draw();
+                break;
+
+            case id === 'ens160_AIQ':
+                gauge = new RadialGauge(ensAiqGaugeConfig(id)).draw();
+                break;
+        }
+
+        if (gauge) gauges.byId[id] = gauge;
+    });
+}
+
+function temperatureLinearGaugeConfig(id) {
+    return {
+        renderTo:          id,
+        title:             String(id),
+        width:             100,
+        height:            300,
+        colorPlate:        '#ccc',
+        colorPlateEnd:     '#ccc',
+        colorUnits:        'black',
+        colorNeedle:       '#222',
+        colorNeedleEnd:    '',
+        colorBar:          '#f5f5f5',
+        colorBarStroke:    'black',
+        colorTitle:        'blue',
+        borderRadius:      20,
+        borders:           true,
+        minValue:          -50,
+        maxValue:          50,
+        minorTicks:        11,
+        majorTicks:        ['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
+        colorNumbers:      ['cyan','blue','blue','blue','black','black','black',
+                            'green','green','#CE7E00','red'],
+        colorMajorTicks:   ['yellow','green','blue','blue','black','black','black',
+                            'black','black','black','black'],
+        fontNumbersSize:   30,
+        fontValueSize:     45,
+        fontTitleSize:     35,
+        fontUnitsSize:     45,
+        units:             '°C',
+        value:             0,
+        animationRule:     'elastic',
+        animationDuration: 250,
     };
-    xhr.ontimeout = function () {
-        callback(-1, null);
+}
+
+function pressureRadialGaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      'ммРст',
+        minValue:   0,
+        maxValue:   770,
+        majorTicks: ['0','200','300','400','500','600','700','740','750','760','770'],
+        minorTicks: 10,
+        highlights: [{ from: 740, to: 760, color: 'rgba(200, 50, 50, .75)' }],
+    });
+}
+
+function humidityRadialGaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      '%',
+        minValue:   0,
+        maxValue:   100,
+        majorTicks: ['0','10','20','30','40','50','60','70','80','90','100'],
+        minorTicks: 5,
+        highlights: [{ from: 60, to: 100, color: 'rgba(200, 50, 50, .75)' }],
+    });
+}
+
+function avgTemperatureGaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      ' C',
+        minValue:   -50,
+        maxValue:   50,
+        majorTicks: ['-50','-40','-30','-20','-10','0','10','20','30','40','50'],
+        minorTicks: 5,
+        highlights: [
+            { from: -50, to: 0,  color: 'rgba(0, 0, 255, .3)' },
+            { from:   0, to: 50, color: 'rgba(255, 0, 0, .3)' },
+        ],
+    });
+}
+
+function airQualityGaugeConfig(id) {
+    // NOTE: the overlapping ranges 51-150 / 101-150 are preserved from the
+    // original file even though they look like a copy/paste mistake.
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      'IAQ',
+        minValue:   0,
+        maxValue:   500,
+        majorTicks: ['0','50','100','150','200','250','300','350','400','450','500'],
+        minorTicks: 10,
+        highlights: [
+            { from:   0, to:  50, color: '#00FF00' },
+            { from:  51, to: 150, color: '#3CB371' },
+            { from: 101, to: 150, color: '#FFD700' },
+            { from: 151, to: 200, color: '#FF8C00' },
+            { from: 201, to: 300, color: '#FF0000' },
+            { from: 301, to: 500, color: '#8B0000' },
+        ],
+    });
+}
+
+function tvocGaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      'ppb',
+        minValue:   0,
+        maxValue:   65000,
+        majorTicks: ['0','5000','10500','16000','21500','27000','32500',
+                     '38000','43500','49000','53000','58500','62500','65000'],
+        minorTicks: 14,
+        highlights: [{ from: 49000, to: 65000, color: 'rgba(200, 50, 50, .75)' }],
+    });
+}
+
+function eco2GaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      'ppm',
+        minValue:   400,
+        maxValue:   65000,
+        majorTicks: ['400','5000','10500','16000','21500','27000','32500',
+                     '38000','43500','49000','53000','58500','62500','65000'],
+        minorTicks: 14,
+        highlights: [{ from: 49000, to: 65000, color: 'rgba(200, 50, 50, .75)' }],
+    });
+}
+
+function ensAiqGaugeConfig(id) {
+    return Object.assign({}, RADIAL_GAUGE_BASE, {
+        renderTo:   id,
+        title:      String(id),
+        units:      'AQI-UBA',
+        minValue:   0,
+        maxValue:   5,
+        majorTicks: ['0','1','2','3','4','5'],
+        minorTicks: 10,
+        highlights: [
+            { from: 0, to: 1, color: '#00FF00' },
+            { from: 1, to: 2, color: '#3CB371' },
+            { from: 2, to: 3, color: '#FFD700' },
+            { from: 3, to: 4, color: '#FF0000' },
+            { from: 4, to: 5, color: '#8B0000' },
+        ],
+    });
+}
+
+
+/* ==========================================================================
+ *  7. Incoming messages
+ * ========================================================================== */
+
+function handleSocketMessage(event) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+
+    let payload;
+    try {
+        payload = JSON.parse(event.data);
+    } catch (err) {
+        console.error('Invalid JSON from server:', err.message, event.data);
+        return;
+    }
+
+    console.log(payload);
+
+    if (payload.time) {
+        $('.mcu_tus').text(String(payload.time[0]));
+        $('.ptime').text(String(payload.time[1]));
+    }
+
+    if (payload.rd_fw) {
+        handleFirmwareReadResponse(payload);
+    }
+
+    if (payload.sensor_data) {
+        handleSensorData(payload);
+    }
+}
+
+function handleFirmwareReadResponse(payload) {
+    const cmd = parseInt(payload.rd_fw, 10);
+    console.log('cmd', cmd);
+
+    for (const key of Object.keys(CMD_DESCRIPTIONS)) {
+        const description = CMD_DESCRIPTIONS[key];
+        console.log(key, description);
+
+        // The original compared cmd against parseInt(key + 41200, 16).
+        // We preserve this (odd) comparison.
+        if (cmd === parseInt(String(key) + '41200', 16)) {
+            $('.srvmode').text(description);
+            break;
+        }
+    }
+
+    if (String(payload.rd_fw) === 'RD_FW' &&
+        payload.data &&
+        String(payload.data[1]) !== 'NULL') {
+        $('#esp_urx').val(String(payload.data[1]) + '\r\n');
+        console.log('ok!');
+    }
+}
+
+function handleSensorData(payload) {
+    console.log('sensor_data received');
+
+    if (!payload.crc16) return;
+
+    const sensors     = payload.sensor_data;
+    const expectedCrc = parseInt(sensors[CRC_INDEX], 16);
+
+    if (isNaN(expectedCrc) || !verifyCrc16(sensors.slice(), expectedCrc)) {
+        console.warn('CRC check failed', sensors, expectedCrc);
+        return;
+    }
+
+    const averages = computeSensorAverages(sensors);
+
+    updateSensorCheckboxes(sensors);
+    updateDerivedFields(sensors);
+    updateProgressBars(sensors);
+    updateGauges(sensors, averages);
+}
+
+
+
+/* ==========================================================================
+ *  8. UI updates
+ * ========================================================================== */
+
+function computeSensorAverages(sensors) {
+    // Temperature: mean of |x|, sign taken from any negative reading
+    // (this unusual rule is preserved from the original).
+    let sign    = 1;
+    let tempSum = 0;
+    for (let i = 0; i < TEMP_SENSOR_COUNT; i++) {
+        const v = parseFloat(sensors[i]);
+        if (v < 0) sign = -sign;
+        tempSum += Math.abs(v);
+    }
+
+    let humSum = 0;
+    for (let i = 0; i < HUM_SENSOR_COUNT; i++) {
+        humSum += parseFloat(sensors[i + 10]);
+    }
+
+    let pressSum = 0;
+    for (let i = 0; i < PRESS_SENSOR_COUNT; i++) {
+        pressSum += parseFloat(sensors[i + 17]);
+    }
+
+    return {
+        avgTemp:  tempSum  * 0.1     * sign,
+        avgHum:   humSum   * 0.14286,
+        avgPress: pressSum * 0.25,
     };
+}
+
+function updateSensorCheckboxes(sensors) {
+    $('#lm75_t1_chk').prop('checked', Boolean(parseInt(sensors[30], 10)));
+    $('#lm75_t2_chk').prop('checked', Boolean(parseInt(sensors[31], 10)));
+}
+
+function updateDerivedFields(sensors) {
+    const half = 0.5;
+    $('#bme280_DEW').val(
+        String((parseFloat(sensors[32]) + parseFloat(sensors[33])) * half).substring(0, 7)
+    );
+    $('#bme280_QNH').val(
+        String((parseFloat(sensors[34]) + parseFloat(sensors[35])) * half).substring(0, 7)
+    );
+    $('#bme280_ALT').val(
+        String((parseFloat(sensors[36]) + parseFloat(sensors[37])) * half).substring(0, 7)
+    );
+
+    // External helper provided elsewhere on the page.
+    ENS_AIQf(parseInt(sensors[24], 10));
+}
+
+function updateProgressBars(sensors) {
+    $('.progress-bar').each(function (index) {
+        const key   = $(this).attr('class').split(' ')[2];
+        const value = parseInt(sensors[26 + index], 10);
+        const width = Math.round(0.0244 * value);
+
+        // NOTE: the original forgot the '%' unit here.
+        $('.' + key)
+            .attr('aria-valuenow', value)
+            .css('width', width + '%');
+
+        $('#' + key).text(value);
+    });
+}
+
+function updateGauges(sensors, averages) {
+    // Linear temperature gauges — one per temperature sensor
+    gauges.linear.forEach(function (gauge, i) {
+        gauge.update({ value: parseFloat(sensors[i]) });
+    });
+
+    // Radial humidity gauges — sensors 10..16
+    gauges.humidity.forEach(function (gauge, i) {
+        gauge.update({ value: parseFloat(sensors[i + 10]) });
+    });
+
+    // Radial pressure gauges — sensors 17..20, converted Pa → mm Hg
+    gauges.pressure.forEach(function (gauge, i) {
+        gauge.update({
+            value: (parseFloat(sensors[i + 17]) * PRESSURE_PA_TO_MMHG).toFixed(2),
+        });
+    });
+
+    // Average gauges
+    updateGaugeById('GauAvTemp',  averages.avgTemp);
+    updateGaugeById('GauAvHum',   averages.avgHum);
+    updateGaugeById('GauAvPress', averages.avgPress);
+
+    // Air-quality gauges (same IAQ value shown in two places)
+    const iaq = rIAQItem_convertValue(
+        parseInt(sensors[21], 10),
+        parseFloat(sensors[6]),
+        parseFloat(sensors[14])
+    );
+    updateGaugeById('GauAirQ',   iaq);
+    updateGaugeById('bme680_gr', iaq);
+
+    // ENS160 sensors
+    updateGaugeById('ens160_tvoc', parseInt(sensors[22], 10));
+    updateGaugeById('ens160_eco2', parseInt(sensors[23], 10));
+    updateGaugeById('ens160_AIQ',  parseInt(sensors[24], 10));
+}
+
+function updateGaugeById(id, value) {
+    const gauge = gauges.byId[id];
+    if (gauge) gauge.update({ value: value });
+}
+
+/* ==========================================================================
+ *  9. Layout & form helpers
+ * ========================================================================== */
+
+function setOnlineState(isOnline) {
+    const $indicator = $('.pst0');
+    if (isOnline) {
+        $indicator.removeClass('bg-danger').addClass('bg-success').text('ОК');
+    } else {
+        $indicator.removeClass('bg-success').addClass('bg-danger').text('off');
+    }
+}
+
+function clearAllFields(value) {
+    formFields.forEach(function (el) {
+        $('#' + el.name)
+            .val(value)
+            .removeClass('is-invalid is-valid');
+    });
+}
+
+// Original names: rm_b / sh_b / rms_b / shs_b
+function collapseSidebar() {
+    $('.mc1').removeClass('col-md-8 col-xl-8').addClass('col-12');
+    $('.bsn0').removeClass('col-md-4 col-xl-4');
+    $('.mc1').removeClass('noscroll collapse hide');
+}
+
+function expandSidebar() {
+    // NOTE: original used jQuery .remove() (removing DOM nodes!) instead of
+    // .removeClass() — fixed here.
+    $('.mc1').removeClass('col-12').addClass('col-md-8 col-xl-8');
+    $('.bsn0').addClass('col-md-4 col-xl-4');
+}
+
+function resetOverlay() {
+    $('.bsn0').removeClass('col-12 overlay');
+    $('.mc1').removeClass('noscroll collapse hide');
+}
+
+function showOverlay() {
+    $('.bsn0').addClass('col-12 overlay');
+    $('.mc1').addClass('noscroll collapse hide');
+}
+
+/* ==========================================================================
+ * 10. Utilities
+ * ========================================================================== */
+
+/**
+ * Verify a CRC-16/CCITT checksum (0x1021 polynomial) over an array of
+ * string chunks. Returns true when the computed checksum equals expectedCrc.
+ *
+ * Adapted from github.com/yaacov/node-modbus-serial.
+ */
+function verifyCrc16(chunks, expectedCrc) {
+    const POLYNOMIAL = 0x1021;
+    let crc = 0xFFFFFFFF;
+
+    for (let c = 0; c < chunks.length; c++) {
+        const chunk = chunks[c];
+        for (let i = 0; i < chunk.length; i++) {
+            crc ^= (chunk.charCodeAt(i) << 8) & 0x0FFFFFFF;
+            crc  = ((crc & 0x8000) ? (crc << 1) ^ POLYNOMIAL : crc << 1) & 0x0FFFFFFF;
+        }
+    }
+
+    return crc === expectedCrc;
+}
+
+/**
+ * Small JSON fetch helper (kept in case HTML still uses it).
+ */
+function fetchJson(url, method, callback, timeoutSeconds) {
+    const xhr = new XMLHttpRequest();
+    xhr.onloadend = function () { callback(xhr.status, xhr.responseText); };
+    xhr.ontimeout = function () { callback(-1, null); };
     xhr.open(method, url, true);
-    xhr.setRequestHeader("Accept", "text/html");
-	xhr.responseType = 'json';
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); 
-	//xhr.getResponseHeader('Content-Length',url.length);
-	// text/plain	;charset=UTF-8
-    xhr.timeout = time_out * 200;
+    xhr.setRequestHeader('Accept', 'text/html');
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    xhr.responseType = 'json';
+    xhr.timeout = timeoutSeconds * 200;
     xhr.send();
 }
 
-/**
- * 		Peripherial	Functions
-*/
+/* ==========================================================================
+ * 11. Backwards-compatible aliases
+ *     (in case the HTML still calls the old function names)
+ * ========================================================================== */
 
-/**
- * Calculates the buffers CRC16.
- *
- * @param {Buffer} buffer the data buffer.
- * @return {number} the calculated CRC16.
- * 
- * Source: github.com/yaacov/node-modbus-serial
- */
-
-function crc16(buffer,extcrc) 
-{
-	var crc = 0xFFFFFFFF;
-	var POLY_D = 0x1021
-	var i=0,j,n1,k;
-	$.each(buffer, function(index, element) {
-        for (var j = 0; j < element.length; j++) {
-			crc ^= (element.charCodeAt(j) << 8) & 0x0FFFFFFF;//charCodeAt
-			crc = (crc & 0x8000 ? (crc << 1) ^ POLY_D : crc << 1) & 0x0FFFFFFF;
-		}
-	});
-    if(crc==extcrc) 
-		{return true;}
-	else
-		{return false;}
-};
-
-function refr_rtc() {
-
-		if($('input[name="autmp"]').is(':checked'))
-		{
-    		if (WSsocket.readyState === 1) 
-			{
-				state_online(true);
-				WSsocket.send(JSON.stringify(httpd_cmd));
-			}
-			else
-			{	state_online(false);ReconnectWebSocket();}
-		}
-}
-
-function rm_b() {
-    // remove deviser HD
-    $(".mc1").removeClass("col-md-8 col-xl-8").html();
-    $(".bsn0").removeClass("col-md-4 col-xl-4").html();
-    $(".mc1").removeClass("noscroll collapse hide");
-    $(".mc1").addClass("col-12").html();
-}
-
-function sh_b() {
-    // deviser HD
-    $(".mc1").remove("col-12").html();
-    $(".mc1").addClass("col-md-8 col-xl-8").html();
-    $(".bsn0").addClass("col-md-4 col-xl-4").html();
-}
-
-function rms_b() {
-    //$('.bsn0').removeClass('col-12').html();
-    $(".bsn0").removeClass("col-12 overlay").html();
-    $(".mc1").removeClass("noscroll collapse hide");
-}
-
-function shs_b() {
-    $(".bsn0").addClass("col-12 overlay").html();
-    $(".mc1").addClass("noscroll collapse hide").html();
-}
-
-
-	
+window.sub_grad       = sendCommandByCode;
+window.rm_b           = collapseSidebar;
+window.sh_b           = expandSidebar;
+window.rms_b          = resetOverlay;
+window.shs_b          = showOverlay;
+window.refr_rtc       = refreshSensorData;
+window.ftvall         = clearAllFields;
+window.fetch1         = fetchJson;
+/*
 window.onload = function () {
 
 $(".bt0st").attr("value", "off");
 $(".navia").addClass("list-group-item list-group-item-action bg-light border");
 $("#esp_tx").val("wsbuser.prints(node.heap());");
 $("#esp_urx").val("");
+$('#esp_tx').val('wsbuser.prints(node.heap());');
+$('#esp_urx').val('');
+$('.bt0st').attr('value', 'off');
+$('.navia').addClass('list-group-item list-group-item-action bg-light border');
 
-rs = setInterval(refr_rtc, 2000);
+formFields = $('*').get();
 
-
+setTimeout(start, 1000);
 }
+*/
+/*
+$(function () {
+    $('#esp_tx').val('wsbuser.prints(node.heap());');
+    $('#esp_urx').val('');
+    $('.bt0st').attr('value', 'off');
+    $('.navia').addClass('list-group-item list-group-item-action bg-light border');
+
+    formFields = $('*').get();
+
+    setTimeout(start, 1000);
+});
+*/
