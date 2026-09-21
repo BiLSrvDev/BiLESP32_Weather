@@ -12,31 +12,30 @@ const RECONNECT_DELAY  = 1000;   // ms — WebSocket retry backoff
 
 const SENSOR_REQUEST = Object.freeze({
     content_type: 'application/json',
-    command:      'get_sens',
-    crc16:        'ANY',
+    cmd_http:      '1',
+	time_http:      0,
+    uart_http:      ''
 });
 
 
 var CMD_DESCRIPTIONS = {
-  0: "WSB_CMD_TXRX_DEFAULT",
-  1: "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  2: "WSB_CMD_TX_CFG_TEMPERATURE",
-  3: "WSB_CMD_RX_CFG_TEMPERATURE",
-  4: "WSB_CMD_RX_CFG_SLAVE",
-  5: "WSB_CMD_TX_CFG_SLAVE",
-  6: "WSB_CMD_GET_KEY",
+  1: "WSB_CMD_RXTX_DATA_TEMPERATURE",
+  2: "WSB_CMD_RX_CFG_TEMPERATURE",
+  3: "WSB_CMD_TX_CFG_TEMPERATURE",
+  4: "WSB_CMD_TX_SET_CFG",
+  5: "WSB_CMD_TX_RESET_APP",
+  6: "WSB_CMD_TX_RESET_SLAVE",
   7: "WSB_CMD_TX_MAX"
 };
 const CMD_MAP = {
   0: "1",
-  1: "1",
-  2: "2",
-  3: "3",
-  4: "4",
-  5: "5",
-  6: "sw_fw",
-  9: "upd_fw",
-  10: "rd_fw"
+  1: "2",
+  2: "3", // SENS OFF
+  3: "4", // RESET App0
+  4: "5", // RESET SLAVE
+  5: "sw_fw",
+  6: "upd_fw",
+  7: "rd_fw"
 };
 
 // Physical constants and sensor layout
@@ -161,7 +160,7 @@ function refreshSensorData() {
  * Send an arbitrary command code (used by UI controls).
  * Maps the numeric code through CMD_MAP before sending.
  */
-function sub_grad(code) {
+function sendCommandByCode(code) {
     if (CMD_MAP[code] !== undefined) {
         SENSOR_REQUEST.command = CMD_MAP[code];
     }
@@ -400,6 +399,11 @@ function handleSocketMessage(event) {
         $('.mcu_tus').text(String(payload.time[0]));
         $('.ptime').text(String(payload.time[1]));
     }
+	
+    if (payload.statcfg) {
+		$('.status').text(String(parseInt(payload.statcfg[0]), 16));
+        $('.config').text(String(parseInt(payload.statcfg[1]), 16));
+    }
 
     if (payload.rd_fw) {
         handleFirmwareReadResponse(payload);
@@ -407,6 +411,10 @@ function handleSocketMessage(event) {
 
     if (payload.sensor_data) {
         handleSensorData(payload);
+    }
+	
+    if (payload.sensor_config) {
+        handleSensorConfig(payload);
     }
 }
 
@@ -454,6 +462,20 @@ function handleSensorData(payload) {
     updateProgressBars(sensors);
     updateGauges(sensors, averages);
 }
+
+function handleConfigData(payload) {
+    console.log('config_data received');
+    if (!payload.crc16) return;
+
+    const sensors     = payload.sensor_data;
+    const expectedCrc = parseInt(sensors[CRC_INDEX], 16);
+
+    if (isNaN(expectedCrc) || !verifyCrc16(sensors.slice(), expectedCrc)) {
+        console.warn('CRC check failed', sensors, expectedCrc);
+        return;
+    }
+}
+
 
 
 
