@@ -9,25 +9,24 @@ var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
 var cmd_descr = {
-  0: "WSB_CMD_TXRX_DEFAULT",
-  1: "WSB_CMD_TXRX_DATA_TEMPERATURE",
-  2: "WSB_CMD_TX_CFG_TEMPERATURE",
-  3: "WSB_CMD_RX_CFG_TEMPERATURE",
-  4: "WSB_CMD_RX_CFG_SLAVE",
-  5: "WSB_CMD_TX_CFG_SLAVE",
-  6: "WSB_CMD_GET_KEY",
-  7: "WSB_CMD_TX_MAX"
+  0: "WSB_CMD_RXTX_DATA_TEMPERATURE",
+  1: "WSB_CMD_RX_CFG_TEMPERATURE",
+  2: "WSB_CMD_RX_CFG_SLAVE",
 };
 const CMD_MAP = {
-  0: "1",
-  1: "1",
-  2: "2",
-  3: "3",
-  4: "4",
-  5: "5",
-  6: "sw_fw",
-  9: "upd_fw",
-  10: "rd_fw"
+  0: "3",		// WSB_CMD_RXTX_DATA_TEMPERATURE
+  1: "4",		// WSB_CMD_RXTX_CFG_TEMPERATURE				
+  2: "5",		// WSB_CMD_TX_CFG_SLAVE
+  3: "6",		// WSB_CMD_RX_RESET_APP
+  4: "7",		// WSB_CMD_TX_RESET_SLAVE
+  5: "8",		// WSB_CMD_TX_SENS_OFF_SLAVE
+  6: "9"		// WSB_CMD_TX_SENS_ON_SLAVE
+  7: "10",		// WSB_CMD_NA_SW
+  8: "11",		// WSB_CMD_TX_DEBUG_SLAVE				
+  9: "12",		// WSB_CMD_TX_DEBUG_OFF_SLAVE
+  10: "13",		// WSB_CMD_SETTXRX_CFG_TEMPERATURE
+  11: "14",		// WSB_CMD_APP0_UPD
+  12: "15",		// WSB_CMD_TX_MAX
 };
 
 var httpd_cmd = 
@@ -40,7 +39,7 @@ var temp_json = {};
 sideset = $(".sideset");
 pmain = $(".pmain");
 
-var gateway = 'wss://weather32app.bilymo.keenetic.pro/ws'
+var gateway = 'wss://wsb32.bilymo.netcraze.pro/ws'
 var WSsocket;
 //var GuageMeter;
 function ReconnectWebSocket() 
