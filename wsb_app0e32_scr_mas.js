@@ -20,7 +20,7 @@ const CMD_MAP = {
   3: "6",		// WSB_CMD_RX_RESET_APP
   4: "7",		// WSB_CMD_TX_RESET_SLAVE
   5: "8",		// WSB_CMD_TX_SENS_OFF_SLAVE
-  6: "9"		// WSB_CMD_TX_SENS_ON_SLAVE
+  6: "9",		// WSB_CMD_TX_SENS_ON_SLAVE
   7: "10",		// WSB_CMD_NA_SW
   8: "11",		// WSB_CMD_TX_DEBUG_SLAVE				
   9: "12",		// WSB_CMD_TX_DEBUG_OFF_SLAVE
