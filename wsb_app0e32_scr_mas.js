@@ -3,7 +3,7 @@
 // reverse panelki dlya debug 
 // function onMessage(event) with 722
 
-var sideset, pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
+var pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
 var CanvGaugeArrT = [];
 var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
@@ -32,7 +32,7 @@ const CMD_MAP = {
 var httpd_cmd = 
 {
 	content_type: "application/json",
-	command: "get_sens",
+	command: "0",
 	crc16: "ANY"
 }
 var temp_json = {};
