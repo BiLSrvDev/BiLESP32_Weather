@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8">
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://rawgit.com/Mikhus/canvas-gauges/master/gauge.min.js">
+<script src="https://canvas-gauges.com/download/latest/all/gauge.min.js">
 </script>
 <script src="https://bilsrv.github.io/WSBSrvWeatherPub/GaugeMeter.js">
 </script>
@@ -25,32 +25,38 @@
     <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar_sensor" aria-controls="#sidebar_sensor" aria-expanded="true" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon" aria-hidden="true"></span>
     </button>
-  <li class="nav-item" data-bs-theme="dark">
-    <a class="nav-link active" aria-current="page" href="#">Active</a>
-  </li>
   <li class="nav-item">
-    <a class="nav-link" href="#" role="button" data-bs-toggle="menu" aria-expanded="false">Задать команду</a>
-    <div class="menu">
-      <a class="menu-item" href="#">Action</a>
-      <a class="menu-item" href="#">Another action</a>
-      <a class="menu-item" href="#">Something else here</a>
+    <a class="nav-link active" href="#" role="button" data-bs-toggle="sys_m" aria-expanded="false">Задать</a>
+    <div class="sys_m menu">
+      <a class="menu-item" onclick="fsend(0)">Реж темпер.</a>
       <hr class="menu-divider">
-      <a class="menu-item" href="#">Separated link</a>
+      <a class="menu-item" onclick="fsend(2)">Конфиг. сис.</a>
+      <a class="menu-item" onclick="fsend(3)">Сброс мастера</a>
+	  <a class="menu-item" onclick="fsend(4)">Сброс слейва</a>
+	  <a class="menu-item" onclick="fsend(5)">Откл. сенс.</a>
+	  <a class="menu-item" onclick="fsend(6)">Вкл. сенс.</a>
+	  <a class="menu-item" onclick="fsend(7)">Перекл. прог.</a>
+	  <a class="menu-item" onclick="fsend(8)">Отлад. вкл.</a>
+	  <a class="menu-item" onclick="fsend(9)">Отлад. выкл</a>
+	  <a class="menu-item" onclick="fsend(11)">Зад. время.</a>
+	  <a class="menu-item" onclick="fsend(12)">Обнов. ОС</a>
     </div>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#">Link</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+    <a class="nav-link" href="#" role="button" data-bs-toggle="sys_m" aria-expanded="false" aria-disabled="true">Считать</a>
+    <div class="sys_m menu">
+      <a class="menu-item" onclick="frx(1)">Конфиг темпер.</a>
+      <hr class="menu-divider">
+      <a class="menu-item" onclick="frx(2)">Конфиг мастера</a>
+    </div>
   </li>
 </ul>
 </div>
 </header>
 <div class="row bg-secondary justify-content-center">
-<div class="col-3 order sidebar collapse multi-collapse" style="background-color:lightgray" id="sidebar_sensor"> 
+<div class="col-3 order sidebar collapse show" style="background-color:lightgray" id="sidebar_sensor"> 
 </div>
-<div class="col-9 align-items-center px-5">
+<div class="col-9 align-items-center px-2">
 <main class="pmain text-white col-sm-auto">
 </main>
 </div

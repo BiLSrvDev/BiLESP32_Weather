@@ -1,4 +1,4 @@
-// upda9a2
+// upda9a3
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 // function onMessage(event) with 722
@@ -586,10 +586,24 @@ ReconnectWebSocket();
 // Initialize GaugeMeter plugin
 }
 
-function sub_grad(aa)
+function fsend(aa)
 {
 if (CMD_MAP[aa] !== undefined) {
     httpd_cmd.command = CMD_MAP[aa];
+}
+	
+if (WSsocket.readyState === 1) 
+{
+	state_online(true);WSsocket.send(JSON.stringify(httpd_cmd));
+}
+else
+{	state_online(false);ReconnectWebSocket();}
+}
+
+function frx(aa)
+{
+if (cmd_descr[aa] !== undefined) {
+    httpd_cmd.command = cmd_descr[aa];
 }
 	
 if (WSsocket.readyState === 1) 
@@ -917,11 +931,7 @@ console.log("Width "+Math.round((0.0244*parseInt(json_data.sensors[26+ind]))).to
 	});
 }
 	
-
-	
 };
-
-
 
 function ftvall(cl) {
     for (i = 0; i < maOBJ.length; i++) {
