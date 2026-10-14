@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<link href="https://bilsrvdev.github.io/BiLESP32_Weather/bootstrap1.min.css" rel="stylesheet" integrity="sha384-B/GM4XqrwHnWXNOWMbloTmrYXZg10cakYGmpfsR/bbzQ6JAJI4ihuyADKLnBgrCe" crossorigin="anonymous">
+<script type="module" src="https://bilsrvdev.github.io/BiLESP32_Weather/bootstrap.bundle.min.js" integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL" crossorigin="anonymous"></script>
+<link href="https://bilsrvdev.github.io/BiLESP32_Weather/dashboard.css" rel="stylesheet">
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" charset="utf-8">
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</script>
+<script src="https://rawgit.com/Mikhus/canvas-gauges/master/gauge.min.js">
+</script>
+<script src="https://bilsrv.github.io/WSBSrvWeatherPub/GaugeMeter.js">
+</script>
+<style>
+</style>
+<title>WSB_Server</title>
+</head>
+<body>
+<header class="navbar sticky-top bg-dark bg-gradient flex-md-nowrap shadow-xl p-3 bg-body rounded">
+<p class="navbar-brand col-md-3 col-lg-2 me-0 px-3 text-warning bg-secondary">WSB_Server
+<button type="button" class="btn btn-primary btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button></p>
+<ul class="navbar-nav flex-row"> 
+<li class="nav-item text-nowrap">
+<span class="navbar text-white px-5 ">Статус сервера:
+<span class="navbar pst0 badge lead text-white"></span>
+</li>
+<li class="nav-item text-nowrap px-3"> 
+<button class="btn btn-primary collapsed bt0st nav-link px-3 text-white bg-info navbar-toggler" type="button" data-bs-toggle="collapse" type="button" data-bs-target="#sidebar_sensor"  aria-label="Toggle navigation"> 
+<span class="navbar-toggler-icon">
+</button> 
+</li> </ul> <div id="navbarSearch" class="navbar-search w-100 collapse"> <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search"></div> 
+</header>  
+<div class="container-fluid h-100 bg-body rounded"> 
+<div class="row justify-content-center h-100">
+<div class="sidebar border border-right col-md-4 col-xl-3 bg-light align-items-center bg-body-tertiary" style="background-color:lightgray" id="sidebar_sensor"> 
+</div>
+<main class="pmain bg-secondary text-white col-sm-auto col-md-8 col-xl-9 px-3 min-vh-100">
+</main></div></div></body></html>
+<script type="text/javascript">$(".pmain").load("https://bilsrvdev.github.io/BiLESP32_Weather/main_app0e32_act.html").html(),$("#sidebar_sensor").load("https://bilsrvdev.github.io/BiLESP32_Weather/side_app0e32_act.html").html()
+</script>
+<script type="text/javascript" src="https://bilsrvdev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js">
+</script>
