@@ -21,12 +21,12 @@
 <div class="container-fluid bg-body rounded">
 <header class="navbar sticky-top bg-dark bg-gradient flex-md-nowrap shadow-xl p-3 bg-body rounded " data-bs-theme="dark">
 <div class="nav-overflow" data-bs-toggle="nav-overflow">
-<ul class="nav nav-tabs" >
+<ul class="nav nav-tabs nav-underline" >
     <button class="btn-icon navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar_sensor" aria-controls="#sidebar_sensor" aria-expanded="true" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon" aria-hidden="true"></span>
     </button>
   <li class="nav-item">
-    <a class="nav-link active" href="#" role="button" data-bs-toggle="sys_m" aria-expanded="false">Задать</a>
+    <a class="nav-link active" href="#" role="button" data-bs-toggle="menu" aria-expanded="false">Задать</a>
     <div class="sys_m menu">
       <a class="menu-item" onclick="fsend(0)">Реж темпер.</a>
       <hr class="menu-divider">
@@ -43,8 +43,8 @@
     </div>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="#" role="button" data-bs-toggle="sys_m" aria-expanded="false" aria-disabled="true">Считать</a>
-    <div class="sys_m menu">
+    <a class="nav-link" href="#" role="button" data-bs-toggle="menu" aria-expanded="false" aria-disabled="true">Считать</a>
+    <div class="menu rd_false">
       <a class="menu-item" onclick="frx(1)">Конфиг темпер.</a>
       <hr class="menu-divider">
       <a class="menu-item" onclick="frx(2)">Конфиг мастера</a>
