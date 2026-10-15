@@ -1013,7 +1013,7 @@ function refr_rtc() {
 				WSsocket.send(JSON.stringify(httpd_cmd));
 			}
 			else
-			{	state_online(false);ReconnectWebSocket();}
+			{	initWebSocket();state_online(false);ReconnectWebSocket();}
 		}
 }
 
