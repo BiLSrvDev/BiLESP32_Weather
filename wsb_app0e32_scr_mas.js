@@ -44,14 +44,14 @@ var WSsocket;
 //var GuageMeter;
 function ReconnectWebSocket() 
 {
-	if(WebSocket.readyState == WebSocket.CLOSED)
-	{
+	//if(WebSocket.readyState == WebSocket.CLOSED)
+	//{
 	console.log("Reconnect")
 	state_online(false);
 //WSsocket.close();
 	WSsocket = new WebSocket(gateway);
 console.log("new WebSocket(gateway) ");
-	}
+	//}
 	return WSsocket;
 };
 
