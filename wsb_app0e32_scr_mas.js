@@ -57,7 +57,7 @@ console.log("new WebSocket(gateway) ");
 
 $('body').delay(1000).queue(function() {
 WSsocket = new WebSocket(gateway);
-initWebSocket();
+
 maOBJ = $('*').get();
 unit="";
 
@@ -574,10 +574,10 @@ catch (e) {
 		return 0;
 }
 
-//if(WSsocket.readyState!=1)
-//{
-//	initWebSocket();
-//}
+if(WSsocket.readyState!=1)
+{
+	initWebSocket();
+}
 
 }); 
 
