@@ -44,16 +44,20 @@ var WSsocket;
 //var GuageMeter;
 function ReconnectWebSocket() 
 {
+	if(WebSocket.readyState == WebSocket.CLOSED)
+	{
 	console.log("Reconnect")
 	state_online(false);
 //WSsocket.close();
 	WSsocket = new WebSocket(gateway);
 console.log("new WebSocket(gateway) ");
+	}
 	return WSsocket;
 };
 
 $('body').delay(1000).queue(function() {
 WSsocket = new WebSocket(gateway);
+initWebSocket();
 maOBJ = $('*').get();
 unit="";
 
@@ -570,10 +574,10 @@ catch (e) {
 		return 0;
 }
 
-if(WSsocket.readyState!=1)
-{
-	initWebSocket();
-}
+//if(WSsocket.readyState!=1)
+//{
+//	initWebSocket();
+//}
 
 }); 
 
@@ -1015,7 +1019,7 @@ function refr_rtc() {
 				WSsocket.send(JSON.stringify(httpd_cmd));
 			}
 			else
-			{	initWebSocket();state_online(false);ReconnectWebSocket();}
+			{	state_online(false);ReconnectWebSocket();}
 		}
 }
 
