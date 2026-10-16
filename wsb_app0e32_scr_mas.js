@@ -48,11 +48,12 @@ function ReconnectWebSocket()
 	state_online(false);
 //WSsocket.close();
 	WSsocket = new WebSocket(gateway);
+console.log("new WebSocket(gateway) ");
 	return WSsocket;
 };
 
 $('body').delay(1000).queue(function() {
-WSsocket = new WebSocket(gateway);
+//WSsocket = new WebSocket(gateway);
 maOBJ = $('*').get();
 unit="";
 
@@ -692,6 +693,7 @@ function onClose(event)
 function onError(event) 
 {
 	// only event
+	 console.log("onError(event) ",event)
 	if(WSsocket.readyState==2 || WSsocket.readyState==3)
 	{
 		state_online(false);
