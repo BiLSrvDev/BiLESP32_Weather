@@ -582,6 +582,36 @@ if(WSsocket.readyState!=1)
 }); 
 
 
+function ENS_AIQf(value) 
+{
+  	$('.ens_AIQ').last().removeClass(function() {
+    	return $( this ).prev().attr("class");
+  	});
+	$(".ens_AIQ").text("");
+	switch (value)
+		{
+		case 1:
+			$(".ens_AIQ").addClass("bg-success").text("ОТЛИЧНО!");
+			break;
+		case 2:
+			$(".ens_AIQ").addClass("bg-info").text("ХОРОШО!");
+			break;
+		case 3:
+			$(".ens_AIQ").addClass("bg-warning").text("НЕ ОЧЕНЬ!");
+			break;
+		case 4:
+			$(".ens_AIQ").addClass("bg-secondary").text("ПЛОХО!");
+			break;
+		case 5:
+			$(".ens_AIQ").addClass("bg-danger").text("ОПАСНО!");
+			break;	
+		default:
+			break;
+		}
+		//default:
+}
+
+
 
 function sub_init()
 {
@@ -828,7 +858,7 @@ if (json_data["sensor_data"])
 	$("#bme280_QNH").val(((parseFloat(json_data.sensor_data[34],10)+parseFloat(json_data.sensor_data[35]))*0.5).toString().substring(0, 7));
 	$("#bme280_ALT").val(((parseFloat(json_data.sensor_data[36],10)+parseFloat(json_data.sensor_data[37]))*0.5).toString().substring(0, 7));
 	
-//ENS_AIQf(parseInt(json_data.sensor_data[24],10));
+ENS_AIQf(parseInt(json_data.sensor_data[24],10));
 	
 	ind=0;
 
