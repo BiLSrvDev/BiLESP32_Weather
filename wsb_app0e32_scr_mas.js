@@ -776,7 +776,7 @@ if (json_data["sensor_data"])
 //	2.4.1 CRC
 //
 	arrbufcrc=json_data.sensor_data;
-	crc16_int=parseInt(json_data.sensor_data[(sensor_data.length-1)], 16);
+	crc16_int=parseInt(json_data.sensor_data[(json_data.sensor_data.length-1)], 16); 
 	console.log("arrbufcrc"+arrbufcrc);
 
 	if(crc16(arrbufcrc,crc16_int) != true || isNaN(crc16_int) )
