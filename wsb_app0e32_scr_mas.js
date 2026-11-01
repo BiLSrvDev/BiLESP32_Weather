@@ -775,7 +775,8 @@ if (json_data["sensor_data"])
 //
 //	2.4.1 CRC 
 //
-	arrbufcrc=json_data.sensor_data.length-1;
+	//arrbufcrc=json_data.sensor_data.length-1;
+	arrbufcrc = JSON.parse(JSON.stringify(json_data.sensor_data.slice(0, -1)));
 	crc16_int=parseInt(json_data.sensor_data[(json_data.sensor_data.length-1)], 16); 
 	console.log("arrbufcrc"+arrbufcrc);
 
