@@ -778,7 +778,7 @@ if (json_data["sensor_data"])
 	//arrbufcrc=json_data.sensor_data.length-1;
 	arrbufcrc = JSON.parse(JSON.stringify(json_data.sensor_data.slice(0, -1)));
 	crc16_int=parseInt(json_data.sensor_data[(json_data.sensor_data.length-1)], 16); 
-	console.log("arrbufcrc"+arrbufcrc);
+	//console.log("arrbufcrc"+arrbufcrc);
 
 	if(crc16(arrbufcrc,crc16_int) != true || isNaN(crc16_int) )
 	{
@@ -791,57 +791,57 @@ if (json_data["sensor_data"])
 	//	{arrbufcrc[i]=json_data.time[i];}
 	
 	//
-	//	2.3 Scope RMS scope sensors
+	//	2.3 Scope RMS scope sensor_data
 	//
 	tmpf=1.0;
 	for(j=0;j<=9;j++)
 	{
-		if(parseFloat(json_data.sensors[j])<0)
+		if(parseFloat(json_data.sensor_data[j])<0)
 			tmpf=tmpf*(-1);
-	RMSt+=Math.abs(parseFloat(json_data.sensors[j]))
+	RMSt+=Math.abs(parseFloat(json_data.sensor_data[j]))
 	}
 	RMSt=RMSt*0.1*tmpf;
 	for(j=0;j<=6;j++)
 	{
-	RMSh+=parseFloat(json_data.sensors[j+10])
+	RMSh+=parseFloat(json_data.sensor_data[j+10])
 		//console.log(RMSh)
 	}
 	RMSh=RMSh*0.14286;
 	for(j=0;j<=3;j++)
 	{
-	RMSp+=parseFloat(json_data.sensors[j+17])
+	RMSp+=parseFloat(json_data.sensor_data[j+17])
 	}
 	RMSp=RMSp*0.25;
 
 	//console.log($("canvas[data-type='radial-gauge']"));
 	//console.log($("canvas[data-type='radial-gauge']").attr("i"));
-	if(parseInt(json_data.sensors[30],10))
+	if(parseInt(json_data.sensor_data[30],10))
 		$("#lm75_t1_chk").prop("checked", true);
 	else
 		$("#lm75_t1_chk").prop("checked", false);
-	if(parseInt(json_data.sensors[31],10))
+	if(parseInt(json_data.sensor_data[31],10))
 		$("#lm75_t2_chk").prop("checked", true);
 	else
 		$("#lm75_t2_chk").prop("checked", false);
 	
-	$("#bme280_DEW").val(((parseFloat(json_data.sensors[32],10)+parseFloat(json_data.sensors[33]))*0.5).toString().substring(0, 7));
-	$("#bme280_QNH").val(((parseFloat(json_data.sensors[34],10)+parseFloat(json_data.sensors[35]))*0.5).toString().substring(0, 7));
-	$("#bme280_ALT").val(((parseFloat(json_data.sensors[36],10)+parseFloat(json_data.sensors[37]))*0.5).toString().substring(0, 7));
+	$("#bme280_DEW").val(((parseFloat(json_data.sensor_data[32],10)+parseFloat(json_data.sensor_data[33]))*0.5).toString().substring(0, 7));
+	$("#bme280_QNH").val(((parseFloat(json_data.sensor_data[34],10)+parseFloat(json_data.sensor_data[35]))*0.5).toString().substring(0, 7));
+	$("#bme280_ALT").val(((parseFloat(json_data.sensor_data[36],10)+parseFloat(json_data.sensor_data[37]))*0.5).toString().substring(0, 7));
 	
-	ENS_AIQf(parseInt(json_data.sensors[24],10));
+	ENS_AIQf(parseInt(json_data.sensor_data[24],10));
 	
 	ind=0;
 
 	$(".progress-bar").each(function(index){
 		//$ = jQuery.noConflict();
 		txt=$(this).attr('class').toString().split(' ')[2];
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensors[26+ind],10).toString());
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensors[26+ind],10).toString());
-		$('.'+txt).css("width", Math.round((0.0244*parseInt(json_data.sensors[26+ind],10))).toString());
-		$('#'+txt).text(parseInt(json_data.sensors[26+ind],10).toString());
+		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensor_data[26+ind],10).toString());
+		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensor_data[26+ind],10).toString());
+		$('.'+txt).css("width", Math.round((0.0244*parseInt(json_data.sensor_data[26+ind],10))).toString());
+		$('#'+txt).text(parseInt(json_data.sensor_data[26+ind],10).toString());
 		ind++
 	});
-console.log("Width "+Math.round((0.0244*parseInt(json_data.sensors[26+ind]))).toString()+"val "+parseInt(json_data.sensors[26+ind]))
+console.log("Width "+Math.round((0.0244*parseInt(json_data.sensor_data[26+ind]))).toString()+"val "+parseInt(json_data.sensor_data[26+ind]))
 	
 	ind=0;
 //try {
@@ -849,7 +849,7 @@ console.log("Width "+Math.round((0.0244*parseInt(json_data.sensors[26+ind]))).to
 
 		if($(this).attr('class')=="canvasT")
 		{
-		CanvGaugeArrT[ind].update({ value: parseFloat(json_data.sensors[ind]) });
+		CanvGaugeArrT[ind].update({ value: parseFloat(json_data.sensor_data[ind]) });
 		ind++;
 		//if(index>8)
 		//{return false;}
@@ -891,44 +891,44 @@ console.log("Width "+Math.round((0.0244*parseInt(json_data.sensors[26+ind]))).to
 			//if(index>6)
 			//	return false;
 			//console.log(CanvGaugeArrH[ind]," indH ",ind," class ",$(this).attr('class'));
-			CanvGaugeArrH[ind].update({ value: parseFloat(json_data.sensors[ind+10])});
+			CanvGaugeArrH[ind].update({ value: parseFloat(json_data.sensor_data[ind+10])});
 			ind++;
 		}
 		
 		if($(this).attr('class')=="canvasP1")
 		{
 			//console.log(CanvGaugeArrP[ind]," indP ",ind," class ",$(this).attr('class'));
-			//console.log(" Pdat "+Pdat+" jd_sens "+json_data.sensors[j+17]);
-			Pdat = (parseFloat(json_data.sensors[j+17])*0.750062).toFixed(2);
-			CanvGaugeArrP[j].update({ value: (parseFloat(json_data.sensors[j+17])*0.750062).toFixed(2)});
+			//console.log(" Pdat "+Pdat+" jd_sens "+json_data.sensor_data[j+17]);
+			Pdat = (parseFloat(json_data.sensor_data[j+17])*0.750062).toFixed(2);
+			CanvGaugeArrP[j].update({ value: (parseFloat(json_data.sensor_data[j+17])*0.750062).toFixed(2)});
 			j++;
 		}
 		
 		if($(this).attr('id')=="GauAirQ")
 		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])));
+			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])));
 			
-			CanvGaugeArrOther[3].update({ value: rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])) });
+			CanvGaugeArrOther[3].update({ value: rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])) });
 		}
 		if($(this).attr('id')=="bme680_gr")
 		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])));
-			CanvGaugeArrOther[4].update({ value: rIAQItem_convertValue(parseInt(json_data.sensors[21],10),parseFloat(json_data.sensors[6]),parseFloat(json_data.sensors[14])) });
+			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])));
+			CanvGaugeArrOther[4].update({ value: rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])) });
 		}
 			
 		if($(this).attr('id')=="ens160_tvoc")
 		{
-			CanvGaugeArrOther[5].update({ value: parseInt(json_data.sensors[22],10) });
+			CanvGaugeArrOther[5].update({ value: parseInt(json_data.sensor_data[22],10) });
 		}
 			
 		if($(this).attr('id')=="ens160_eco2")
 		{
-			CanvGaugeArrOther[6].update({ value: parseInt(json_data.sensors[23],10)});
+			CanvGaugeArrOther[6].update({ value: parseInt(json_data.sensor_data[23],10)});
 		}
 			
 		if($(this).attr('id')=="ens160_AIQ")
 		{
-			CanvGaugeArrOther[7].update({ value: parseInt(json_data.sensors[24],10)});
+			CanvGaugeArrOther[7].update({ value: parseInt(json_data.sensor_data[24],10)});
 		}
 	});
 }
