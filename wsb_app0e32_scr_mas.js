@@ -771,14 +771,12 @@ if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data
 //
 if (json_data["sensor_data"]) 
 {
-		console.log("(json_data[sensor_data])");
+		//console.log("(json_data[sensor_data])");
 //
 //	2.4.1 CRC
 //
-if (json_data["crc16"]) 
-{
 	arrbufcrc=[].json_data.sensor_data.copy();
-	crc16_int=parseInt(json_data.sensor_data[42], 16);
+	crc16_int=parseInt(json_data.sensor_data[(sensor_data.length-1)], 16);
 	console.log("arrbufcrc"+arrbufcrc);
 
 	if(crc16(arrbufcrc,crc16_int) != true || isNaN(crc16_int) )
@@ -790,9 +788,6 @@ if (json_data["crc16"])
 	//	{arrbufcrc[i]=json_data.time[i];j++;}
 	//for(i=0;i<json_data.time.length)
 	//	{arrbufcrc[i]=json_data.time[i];}
-}
-else
-{return 0;}
 	
 	//
 	//	2.3 Scope RMS scope sensors
