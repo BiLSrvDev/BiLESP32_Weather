@@ -828,7 +828,7 @@ if (json_data["sensor_data"])
 	$("#bme280_QNH").val(((parseFloat(json_data.sensor_data[34],10)+parseFloat(json_data.sensor_data[35]))*0.5).toString().substring(0, 7));
 	$("#bme280_ALT").val(((parseFloat(json_data.sensor_data[36],10)+parseFloat(json_data.sensor_data[37]))*0.5).toString().substring(0, 7));
 	
-	ENS_AIQf(parseInt(json_data.sensor_data[24],10));
+//ENS_AIQf(parseInt(json_data.sensor_data[24],10));
 	
 	ind=0;
 
