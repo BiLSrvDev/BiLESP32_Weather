@@ -1,4 +1,4 @@
-// upda9a8
+// upda10a0
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 // function onMessage(event) with 722 
@@ -57,26 +57,8 @@ function setGaugeValue(id, value) {
     g.update({ value: value });
   }
 }
-//var GuageMeter;
-function ReconnectWebSocket() 
-{
-	
-if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-    reconnectAttempts = 0;
-    return;
-}
-	//if(WebSocket.readyState == WebSocket.CLOSED)
-	//{
-	console.log("Reconnect")
-	state_online(false);
-//WSsocket.close();
-	WSsocket = new WebSocket(gateway);
-console.log("new WebSocket(gateway) ");
-	//}
-	return WSsocket;
-};
 
-$(function () {
+$('body').delay(1000).queue(function() {
 setTimeout(function () {
 // 1) сокет с обработчиками
 createWebSocket();
@@ -219,7 +201,7 @@ $("canvas[data-type='radial-gauge']").each(function(index){
     needleCircleInner: false,
     animationDuration: 1500,
     animationRule: "linear"
-	}).draw();T
+	}).draw();
       CanvGaugeArrH.push(gauge);
       CanvGaugeMap[id] = gauge;
 	}
@@ -710,17 +692,15 @@ function createWebSocket() {
     // аккуратно закрываем старый
     if (WSsocket) {
         try {
-            WSsocket.onopen = null;
-            WSsocket.onclose = null;
-            WSsocket.onmessage = null;
-            WSsocket.onerror = null;
+            WSsocket.onopen = WSsocket.onclose =
+            WSsocket.onmessage = WSsocket.onerror = null;
+        } catch (e) { console.warn("cleanup handlers:", e); }
+        try {
             if (WSsocket.readyState === WebSocket.CONNECTING ||
                 WSsocket.readyState === WebSocket.OPEN) {
                 WSsocket.close();
             }
-        } catch (e) { 
-			console.warn("cleanup socket:", e); 
-		}
+        } catch (e) { console.warn("cleanup close:", e); }
     }
 
     try {
@@ -801,11 +781,11 @@ function onError(event) {
 function rIAQItem_convertValue(rawValue,_temp,_humd)
 {
   // Get temperature & humidity
-	_hum_ratio = 0.09;
-	_min_T=0;
-	_min_U=500;
-	_max_T=1600000;
-	_max_U=0;
+    const _hum_ratio = 0.09;
+    const _min_T = 0;
+    const _min_U = 500;
+    const _max_T = 1600000;
+    const _max_U = 0;
 	
  // Compensate exponential impact of humidity on resistance 
   if (!isNaN(_temp) && !isNaN(_humd)) {
@@ -907,19 +887,16 @@ if (Array.isArray(json_data.sensor_data) && json_data.sensor_data.length > 0)
 	//
 	//	2.3 Scope RMS scope sensor_data
 	//
-	tmpf = 1.0;
+	//tmpf = 1.0;
 	ind = 0;
 
 	for (j = 0; j < REG_T.length; j++) {
 		if ((REGFAIL & (1 << REG_T[j])) === 0) {
-			ind++;
-			if (parseFloat(json_data.sensor_data[j]) < 0) {
-				tmpf = -tmpf;
-			}
-			RMSt += Math.abs(parseFloat(json_data.sensor_data[j]));
+			const v = parseFloat(json_data.sensor_data[j]);
+			if (!isNaN(v)) { ind++; RMSt += v; }
 		}
 	}
-	RMSt = ind ? (RMSt / ind) * tmpf : 0;
+	RMSt = ind ? RMSt / ind : 0;
 
 	ind = 0;
 	for (j = 0; j < REG_H.length; j++) {
@@ -1134,7 +1111,7 @@ function rm_b() {
 
 function sh_b() {
     // deviser HD
-    $(".mc1").remove("col-12");
+    $(".mc1").remove("col-12");                 // ← удаляет элементы с тегом col-12
     $(".mc1").addClass("col-md-8 col-xl-8").html();
     $(".bsn0").addClass("col-md-4 col-xl-4").html();
 }
