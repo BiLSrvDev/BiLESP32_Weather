@@ -1,7 +1,7 @@
-// upda9a6
+// upda9a7
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
-// function onMessage(event) with 722
+// function onMessage(event) with 722 
 
 let reconnectAttempts = 0;
 let reconnectTimer = null;
@@ -84,8 +84,9 @@ createWebSocket();
 maOBJ = $('*').get();
 unit="";
 
+
 $("canvas[data-type='linear-gauge']").each(function(index){	
-	
+	const id = this.id; 
     const gauge = new LinearGauge({
     renderTo: id,
     width: 100,
@@ -123,7 +124,7 @@ $("canvas[data-type='linear-gauge']").each(function(index){
 try
 {
 $("canvas[data-type='radial-gauge']").each(function(index){	
-	
+	const id = this.id;                 // ← добавлено (одно на весь each)
 	//if($(this).attr('class')=="canvasP1")
 	if($(this).hasClass("canvasP1"))
 	{
@@ -930,7 +931,7 @@ if (Array.isArray(json_data.sensor_data) && json_data.sensor_data.length > 0)
 	RMSh = ind ? RMSh / ind : 0;
 
 	ind = 0;
-	for (j = 0; j <= REG_P.length; j++) {
+	for (j = 0; j < REG_P.length; j++) {
 		if ((REGFAIL & (1 << REG_P[j])) === 0) {
 			ind++;
 			RMSp += parseFloat(json_data.sensor_data[j + 17]);
