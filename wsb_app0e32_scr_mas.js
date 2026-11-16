@@ -1,16 +1,21 @@
-// upda9a3
+// upda9a4
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 // function onMessage(event) with 722
-
+let reconnectAttempts = 0;
+let reconnectTimer = null;
+const MAX_RECONNECT_ATTEMPTS = 10;
+const BASE_DELAY = 1000;
+const MAX_DELAY = 10000;
 var pmain, sets, maOBJ, canvasOBJ, GuageMeterOBJ;
 var CanvGaugeArrT = [];
 var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
-const FAIL_T[10] = {1,2,5,6,3,4,7,9,8,10}
-const FAIL_H[6] = {5,6,3,4,7,9}
-const FAIL_P[4] = {5,6,7,10}
+var CanvGaugeMap = {};
+const REG_T = [1, 2, 5, 6, 3, 4, 7, 9, 8, 10];
+const REG_H = [5, 6, 3, 4, 7, 9];
+const REG_P = [5, 6, 7, 10];
 var cmd_descr = {
   0: "WSB_CMD_RXTX_DATA_TEMPERATURE",
   1: "WSB_CMD_RX_CFG_TEMPERATURE",
@@ -44,9 +49,21 @@ pmain = $(".pmain");
 
 var gateway = 'wss://wsb32.bilymo.netcraze.pro/ws'
 var WSsocket;
+
+function setGaugeValue(id, value) {
+  const g = CanvGaugeMap[id];
+  if (g && typeof value === "number" && isFinite(value)) {
+    g.update({ value: value });
+  }
+}
 //var GuageMeter;
 function ReconnectWebSocket() 
 {
+	
+if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    reconnectAttempts = 0;
+    return;
+}
 	//if(WebSocket.readyState == WebSocket.CLOSED)
 	//{
 	console.log("Reconnect")
@@ -58,8 +75,10 @@ console.log("new WebSocket(gateway) ");
 	return WSsocket;
 };
 
-$('body').delay(1000).queue(function() {
-WSsocket = new WebSocket(gateway);
+$(function () {
+setTimeout(function () {
+// 1) сокет с обработчиками
+createWebSocket();
 
 maOBJ = $('*').get();
 unit="";
@@ -97,6 +116,8 @@ $("canvas[data-type='linear-gauge']").each(function(index){
 	animationRule: 'elastic',
 	animationDuration: 250
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 });
 try
 {
@@ -147,6 +168,8 @@ $("canvas[data-type='radial-gauge']").each(function(index){
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 	 }
 	
 	if($(this).attr('class')=="canvasH1")
@@ -194,6 +217,8 @@ $("canvas[data-type='radial-gauge']").each(function(index){
     animationDuration: 1500,
     animationRule: "linear"
 	}).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 	}
 
 	
@@ -234,6 +259,8 @@ if($(this).attr('id')=="GauAvTemp")
     needleCircleInner: false,
     animationDuration: 1500,
     animationRule: "linear"
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }).draw());
 }
 	
@@ -281,6 +308,8 @@ if($(this).attr('id')=="GauAvHum")
     needleCircleInner: false,
     animationDuration: 1500,
     animationRule: "linear"
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }).draw());
 }
 	
@@ -330,6 +359,8 @@ if($(this).attr('id')=="GauAvPress")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }
 	
 if($(this).attr('id')=="GauAirQ" || $(this).attr('id')=="bme680_gr")
@@ -402,6 +433,8 @@ if($(this).attr('id')=="GauAirQ" || $(this).attr('id')=="bme680_gr")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }
 	
 	
@@ -453,6 +486,8 @@ if($(this).attr('id')=="ens160_tvoc")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }
 	
 if($(this).attr('id')=="ens160_eco2")
@@ -503,6 +538,8 @@ if($(this).attr('id')=="ens160_eco2")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 	}
 
 	
@@ -567,6 +604,8 @@ if($(this).attr('id')=="ens160_AIQ")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw());
+      CanvGaugeArrT.push(gauge);
+      CanvGaugeMap[id] = gauge;
 }
 	
 });
@@ -577,79 +616,59 @@ catch (e) {
 		return 0;
 }
 
-if(WSsocket.readyState!=1)
-{
-	initWebSocket();
-}
-
+    if (!WSsocket || WSsocket.readyState === WebSocket.CLOSED) {
+      createWebSocket();
+    }
+	}, 1000);
 }); 
 
 
-function ENS_AIQf(value) 
-{
-  	$('.ens_AIQ').last().removeClass(function() {
-    	return $( this ).prev().attr("class");
-  	});
-	$(".ens_AIQ").text("");
-	switch (value)
-		{
-		case 1:
-			$(".ens_AIQ").addClass("bg-success").text("ОТЛИЧНО!");
-			break;
-		case 2:
-			$(".ens_AIQ").addClass("bg-info").text("ХОРОШО!");
-			break;
-		case 3:
-			$(".ens_AIQ").addClass("bg-warning").text("НЕ ОЧЕНЬ!");
-			break;
-		case 4:
-			$(".ens_AIQ").addClass("bg-secondary").text("ПЛОХО!");
-			break;
-		case 5:
-			$(".ens_AIQ").addClass("bg-danger").text("ОПАСНО!");
-			break;	
-		default:
-			break;
-		}
-		//default:
-}
+function ENS_AIQf(value) {
+  const $els = $('.ens_AIQ');
+  $els.removeClass('bg-success bg-info bg-warning bg-secondary bg-danger').text('');
 
+  switch (Number(value)) {
+    case 1: $els.addClass('bg-success').text('ОТЛИЧНО!'); break;
+    case 2: $els.addClass('bg-info').text('ХОРОШО!'); break;
+    case 3: $els.addClass('bg-warning').text('НЕ ОЧЕНЬ!'); break;
+    case 4: $els.addClass('bg-secondary').text('ПЛОХО!'); break;
+    case 5: $els.addClass('bg-danger').text('ОПАСНО!'); break;
+  }
+}
 
 
 function sub_init()
 {
 //
-initWebSocket();
-ReconnectWebSocket();
+    ReconnectWebSocket();
+//initWebSocket();
 // Initialize GaugeMeter plugin
+}
+
+function sendHttpdCmd() {
+  if (!WSsocket || WSsocket.readyState !== WebSocket.OPEN) {
+    state_online(false);
+    ReconnectWebSocket();
+    return;
+  }
+
+  state_online(true);
+  WSsocket.send(JSON.stringify(httpd_cmd));
 }
 
 function fsend(aa)
 {
-if (CMD_MAP[aa] !== undefined) {
-    httpd_cmd.command = CMD_MAP[aa];
-}
-	
-if (WSsocket.readyState === 1) 
-{
-	state_online(true);WSsocket.send(JSON.stringify(httpd_cmd));
-}
-else
-{	state_online(false);ReconnectWebSocket();}
+	if (CMD_MAP[aa] !== undefined) {
+		httpd_cmd.command = CMD_MAP[aa];
+	}
+	sendHttpdCmd();
 }
 
-function frx(aa)
-{
-if (cmd_descr[aa] !== undefined) {
-    httpd_cmd.command = cmd_descr[aa];
-}
-	
-if (WSsocket.readyState === 1) 
-{
-	state_online(true);WSsocket.send(JSON.stringify(httpd_cmd));
-}
-else
-{	state_online(false);ReconnectWebSocket();}
+function frx(aa) {
+  if (CMD_MAP[aa] !== undefined) {
+    httpd_cmd.command = CMD_MAP[aa];
+  }
+  sendHttpdCmd();
 }
 
 
@@ -673,71 +692,107 @@ else
 //  waitForSocketConnection(socket, () => {
 //        socket.send(action.payload);
  // })
-function waitForSocketConnection(socket, callback)
-{
-    setTimeout(
-        function () {
-            if (socket.readyState === 1) {
-                console.log("Connection is made")
-                if (callback != null){
-                    callback();
-                }
-            } else {
-                console.log("wait for connection...")
-                if (callback != null)
-					waitForSocketConnection(socket, callback);
+
+function getReconnectDelay() {
+    const exponentialDelay = Math.min(
+        BASE_DELAY * Math.pow(2, reconnectAttempts),
+        MAX_DELAY
+    );
+    const jitter = exponentialDelay * Math.random() * 0.3;
+    return exponentialDelay + jitter;
+}
+
+// Единственная точка создания сокета + назначения обработчиков
+function createWebSocket() {
+    // аккуратно закрываем старый
+    if (WSsocket) {
+        try {
+            WSsocket.onopen = null;
+            WSsocket.onclose = null;
+            WSsocket.onmessage = null;
+            WSsocket.onerror = null;
+            if (WSsocket.readyState === WebSocket.CONNECTING ||
+                WSsocket.readyState === WebSocket.OPEN) {
+                WSsocket.close();
             }
-        }, 5000); // wait 5 milisecond for the connection...
+        } catch (e) { 
+			console.warn("cleanup socket:", e); 
+		}
+    }
+
+    try {
+        WSsocket = new WebSocket(gateway);
+    } catch (e) {
+        console.error("WebSocket create failed:", e);
+        scheduleReconnect();
+        return null;
+    }
+
+    WSsocket.onopen    = onOpen;
+    WSsocket.onclose   = onClose;
+    WSsocket.onmessage = onMessage;
+    WSsocket.onerror   = onError;
+    return WSsocket;
 }
 
-
-function initWebSocket()
-{
-	//console.log('Trying to open a WebSocket connection...');
-	
-	WSsocket.onopen = onOpen;
-	WSsocket.onclose = onClose;
-	WSsocket.onmessage = onMessage; // add this line
-	WSsocket.onerror = onError;
-	// socket.isConnected(); // or: socket.isConnected(function(connected) {});
-	// socket.listen(function(data) {});
-	// socket.remove(listenerCallback);
-	// socket.removeAll();
+function scheduleReconnect() {
+    if (reconnectTimer) return;                 // уже запланировано
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.error("MAX_RECONNECT_ATTEMPTS достигнут");
+        state_online(false);
+        return;
+    }
+    const delay = getReconnectDelay();
+    console.log(`Переподключение через ${Math.round(delay)} мс (попытка ${reconnectAttempts + 1})`);
+    reconnectAttempts++;
+    reconnectTimer = setTimeout(function () {
+        reconnectTimer = null;
+        createWebSocket();
+    }, delay);
 }
 
-function onOpen(event)
-{
-	//console.log('ws opened');
-	state_online(true);
+// Совместимость со старым API
+function ReconnectWebSocket() {
+    if (WSsocket &&
+        (WSsocket.readyState === WebSocket.OPEN ||
+         WSsocket.readyState === WebSocket.CONNECTING)) {
+        return WSsocket;
+    }
+    if (reconnectTimer) return WSsocket;
+    return createWebSocket();
 }
 
-function onClose(event)
-{
-	// wasClean Returns a boolean value that Indicates whether or not the connection was cleanly closed.
-	// reason
-	// Returns an unsigned short containing the close code sent by the server.
-	state_online(false);
-	if (event.wasClean) 
-	{
-        console.log('Соединение закрыто чисто');
-	}
-	ReconnectWebSocket();
-	//waitForSocketConnection(WSsocket, ReconnectWebSocket());
-	console.log('ws close');
-	WSsocket.close();
+// Совместимость: теперь просто синоним создания
+function initWebSocket() {
+    if (!WSsocket) createWebSocket();
 }
 
-function onError(event) 
-{
-	// only event
-	 console.log("onError(event) ",event)
-	if(WSsocket.readyState==2 || WSsocket.readyState==3)
-	{
-		state_online(false);
-		ReconnectWebSocket();
-		console.log('ws error'+event);
-	}
-};
+function onOpen(event) {
+    console.log("ws opened");
+    state_online(true);
+    reconnectAttempts = 0;
+    if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+    }
+}
+
+function onClose(event) {
+    console.log(`ws closed: code=${event.code} reason="${event.reason}" clean=${event.wasClean}`);
+    state_online(false);
+    if (event.code === 1000) return;            // штатное закрытие — не реконнектим
+    scheduleReconnect();                         // ← без прямого .close()
+}
+
+function onError(event) {
+    console.error("ws error", event);
+    state_online(false);
+    // onClose сам запланирует реконнект. Здесь — только «страховка»
+    if (!WSsocket || WSsocket.readyState === WebSocket.CLOSED) {
+        scheduleReconnect();
+    }
+}
+
 
 //https://kotyara12.ru/iot/bme680/
 function rIAQItem_convertValue(rawValue,_temp,_humd)
@@ -769,19 +824,18 @@ function rIAQItem_convertValue(rawValue,_temp,_humd)
 
 function onMessage(event)
 {
-arrbufcrc="";
-arrtemp="";
-REGFAIL=0;
-tmpf=0.0;
-ind=0,j=0,cmd=0,crc16_int=0;
-Pdat=0.0,RMSt=0.0,
-RMSh=0.0,RMSp=0.0;
+  let arrbufcrc = "";
+  let REGFAIL = 0;
+  let ind = 0, j = 0, cmd = 0, crc16_int = 0;
+  let Pdat = 0.0, RMSt = 0.0, RMSh = 0.0, RMSp = 0.0;
+  let json_data;
 //
 //	2.1	Processing 'onMessage'
 //
-if(WSsocket.readyState==1)
-{
+if (!WSsocket || WSsocket.readyState !== WebSocket.OPEN) return;
 	console.log(event.data);
+	
+
 try {
 	json_data = JSON.parse(event.data);
 	console.log(json_data);
@@ -790,13 +844,11 @@ try {
 		console.log(event.data);
 		return 0;
 	}
-}
-else
-	return 0;
+
 //
 //	2.2 Times from mcu
 //
-if (json_data["time"]) 
+if (Array.isArray(json_data.time) && json_data.time.length >= 2)
 {
 	$('.mcu_tus').text(json_data.time[0].toString());
 	$('.ptime').text(json_data.time[1].toString());
@@ -804,39 +856,38 @@ if (json_data["time"])
 
 //	2.3 temp_json["rd_fw"]
 //
-if (json_data["rd_fw"]) 
+if (json_data.rd_fw !== undefined && json_data.rd_fw !== null) 
 {
 cmd=parseInt(json_data.rd_fw.toString(), 10);
-console.log("cmd "+cmd);
-$.each(cmd_descr, function( index, value ) {
-	
-console.log(index+" "+value);
-	if(cmd==parseInt((index+41200), 16))
-	{
-		console.log(value.toString());
-		$(".srvmode").text(value.toString());
-		return true;
-	}
-});
+    if (!isNaN(cmd)) {
+      $.each(cmd_descr, function (index, value) {
+        if (cmd === parseInt(index, 10) + 41200) {
+          $(".srvmode").text(String(value));
+          return false;
+        }
+      });
+    }
 
-if (String(json_data.rd_fw.toString())==String("RD_FW") && String(json_data.data[1].toString())!=String("NULL")) 
-{
-	$("#esp_urx").val(String(json_data.data[1])+"\r\n");
-	console.log("ok!");
-}
+    if (String(json_data.rd_fw) === "RD_FW" &&
+        Array.isArray(json_data.data) &&
+        json_data.data[1] != null &&
+        String(json_data.data[1]) !== "NULL") {
+      $("#esp_urx").val(String(json_data.data[1]) + "\r\n");
+      console.log("ok!");
+    }
 };
 	
 //
 //	2.4 temp_json["sensors"]
 //
-if (json_data["sensor_data"]) 
+if (Array.isArray(json_data.sensor_data) && json_data.sensor_data.length > 0)
 {
 		//console.log("(json_data[sensor_data])");
 //
 //	2.4.1 CRC 
 //
 	//arrbufcrc=json_data.sensor_data.length-1;
-	arrbufcrc = JSON.parse(JSON.stringify(json_data.sensor_data.slice(0, -1)));
+	arrbufcrc = json_data.sensor_data.slice(0, -1);
 	crc16_int=parseInt(json_data.sensor_data[(json_data.sensor_data.length-1)], 16); 
 	//console.log("arrbufcrc"+arrbufcrc);
 
@@ -853,83 +904,79 @@ if (json_data["sensor_data"])
 	//
 	//	2.3 Scope RMS scope sensor_data
 	//
-	tmpf=1.0;
-	for(j=0;j<=9;j++)
-	{
-		if((REGFAIL & (1<<REG_T[j]))==0)
-		{
-			ind++;
-			if((parseFloat(json_data.sensor_data[j])<0))
-				tmpf=tmpf*(-1);
-			RMSt+=Math.abs(parseFloat(json_data.sensor_data[j]))
-		}
-	}
-	RMSt=(RMSt/ind)*tmpf;
+	tmpf = 1.0;
 	ind = 0;
-	
-	for(j=0;j<=6;j++)
-	{
-		if((REGFAIL & (1<<REG_H[j]))==0)
-		{
+
+	for (j = 0; j <= 9; j++) {
+		if ((REGFAIL & (1 << REG_T[j])) === 0) {
 			ind++;
-			RMSh+=parseFloat(json_data.sensor_data[j+10])
-			//console.log(RMSh)
-		}
-	RMSh=RMSh/ind;
-	ind = 0;	
-		
-	for(j=0;j<=3;j++)
-	{
-		if((REGFAIL & (1<<REG_H[j]))==0)
-		{
-			ind++;
-			RMSp+=parseFloat(json_data.sensor_data[j+17])
+			if (parseFloat(json_data.sensor_data[j]) < 0) {
+				tmpf = -tmpf;
+			}
+			RMSt += Math.abs(parseFloat(json_data.sensor_data[j]));
 		}
 	}
-	RMSp=RMSp/ind;
+	RMSt = ind ? (RMSt / ind) * tmpf : 0;
+
+	ind = 0;
+	for (j = 0; j <= 6; j++) {
+		if ((REGFAIL & (1 << REG_H[j])) === 0) {
+			ind++;
+			RMSh += parseFloat(json_data.sensor_data[j + 10]);
+		}
+	}
+	RMSh = ind ? RMSh / ind : 0;
+
+	ind = 0;
+	for (j = 0; j <= 3; j++) {
+		if ((REGFAIL & (1 << REG_P[j])) === 0) {
+			ind++;
+			RMSp += parseFloat(json_data.sensor_data[j + 17]);
+		}
+	}
+	RMSp = ind ? RMSp / ind : 0;
 
 	//console.log($("canvas[data-type='radial-gauge']"));
 	//console.log($("canvas[data-type='radial-gauge']").attr("i"));
-	if(parseInt(json_data.sensor_data[30],10))
-		$("#lm75_t1_chk").prop("checked", true);
-	else
-		$("#lm75_t1_chk").prop("checked", false);
-	if(parseInt(json_data.sensor_data[31],10))
-		$("#lm75_t2_chk").prop("checked", true);
-	else
-		$("#lm75_t2_chk").prop("checked", false);
+    $("#lm75_t1_chk").prop("checked", parseInt(json_data.sensor_data[30], 10) !== 0);
+    $("#lm75_t2_chk").prop("checked", parseInt(json_data.sensor_data[31], 10) !== 0);
 	
 	$("#bme280_DEW").val(((parseFloat(json_data.sensor_data[32],10)+parseFloat(json_data.sensor_data[33]))*0.5).toString().substring(0, 7));
 	$("#bme280_QNH").val(((parseFloat(json_data.sensor_data[34],10)+parseFloat(json_data.sensor_data[35]))*0.5).toString().substring(0, 7));
 	$("#bme280_ALT").val(((parseFloat(json_data.sensor_data[36],10)+parseFloat(json_data.sensor_data[37]))*0.5).toString().substring(0, 7));
+	
+    //$("#bme280_DEW").val(isFinite(dew) ? dew.toString().substring(0, 7) : "");
+    //$("#bme280_QNH").val(isFinite(qnh) ? qnh.toString().substring(0, 7) : "");
+    //$("#bme280_ALT").val(isFinite(alt) ? alt.toString().substring(0, 7) : "");
 	
 ENS_AIQf(parseInt(json_data.sensor_data[24],10));
 	
 	ind=0;
 
 	$(".progress-bar").each(function(index){
-		//$ = jQuery.noConflict();
-		txt=$(this).attr('class').toString().split(' ')[2];
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensor_data[26+ind],10).toString());
-		$('.'+txt).attr("aria-valuenow",parseInt(json_data.sensor_data[26+ind],10).toString());
-		$('.'+txt).css("width", Math.round((0.0244*parseInt(json_data.sensor_data[26+ind],10))).toString());
-		$('#'+txt).text(parseInt(json_data.sensor_data[26+ind],10).toString());
-		ind++
+//const classes = String($(this).attr('class') || '').split(/\s+/);
+//const txt = classes[2];
+		const txt = $(this).attr('class').toString().split(' ')[2];
+		const raw = parseInt(json_data.sensor_data[26 + ind], 10);
+		if (isNaN(raw)) return;
+		const pct = Math.min(100, Math.max(0, Math.round(0.0244 * raw)));
+		$('.' + txt).attr("aria-valuenow", raw.toString());
+		$('.' + txt).css("width", pct + "%");           // ← добавлен %
+		$('#' + txt).text(raw.toString());
+		ind++;
 	});
 console.log("Width "+Math.round((0.0244*parseInt(json_data.sensor_data[26+ind]))).toString()+"val "+parseInt(json_data.sensor_data[26+ind]))
 	
 	ind=0;
 //try {
-	$("canvas[data-type='linear-gauge']").each(function(index){
-
-		if($(this).attr('class')=="canvasT")
-		{
-		CanvGaugeArrT[ind].update({ value: parseFloat(json_data.sensor_data[ind]) });
-		ind++;
-		//if(index>8)
-		//{return false;}
-		}
-	});
+    $("canvas[data-type='linear-gauge']").each(function () {
+      if ($(this).hasClass("canvasT")) {
+        const v = parseFloat(json_data.sensor_data[ind]);
+        const g = CanvGaugeMap[this.id] || CanvGaugeArrT[ind];
+        if (g) g.update({ value: isNaN(v) ? 0 : v });
+        ind++;
+      }
+    });
 	
 	//console.log(CanvGaugeArrH);
 	//console.log(CanvGaugeArrP);
@@ -938,87 +985,67 @@ console.log("Width "+Math.round((0.0244*parseInt(json_data.sensor_data[26+ind]))
 	//console.log(RMSp);
 	
 	ind=0;
-	$("canvas[data-type='radial-gauge']").each(function(index){
-		if($(this).attr('id')=="GauAvTemp")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[0].update({ value: RMSt});
-		}
-		if($(this).attr('id')=="GauAvHum")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[1].update({ value: RMSh});
-		}
-		if($(this).attr('id')=="GauAvPress")
-		{
-			//if(index>6)
-			//	return false;
-			
-			CanvGaugeArrOther[2].update({ value: RMSp});
-		}
-		
-		if($(this).attr('class')=="canvasH1")
-		{
-			//if(index>6)
-			//	return false;
-			//console.log(CanvGaugeArrH[ind]," indH ",ind," class ",$(this).attr('class'));
-			CanvGaugeArrH[ind].update({ value: parseFloat(json_data.sensor_data[ind+10])});
-			ind++;
-		}
-		
-		if($(this).attr('class')=="canvasP1")
-		{
-			//console.log(CanvGaugeArrP[ind]," indP ",ind," class ",$(this).attr('class'));
-			//console.log(" Pdat "+Pdat+" jd_sens "+json_data.sensor_data[j+17]);
-			Pdat = (parseFloat(json_data.sensor_data[j+17])*0.750062).toFixed(2);
-			CanvGaugeArrP[j].update({ value: (parseFloat(json_data.sensor_data[j+17])*0.750062).toFixed(2)});
-			j++;
-		}
-		
-		if($(this).attr('id')=="GauAirQ")
-		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])));
-			
-			CanvGaugeArrOther[3].update({ value: rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])) });
-		}
-		if($(this).attr('id')=="bme680_gr")
-		{
-			//console.log(" iaq "+rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])));
-			CanvGaugeArrOther[4].update({ value: rIAQItem_convertValue(parseInt(json_data.sensor_data[21],10),parseFloat(json_data.sensor_data[6]),parseFloat(json_data.sensor_data[14])) });
-		}
-			
-		if($(this).attr('id')=="ens160_tvoc")
-		{
-			CanvGaugeArrOther[5].update({ value: parseInt(json_data.sensor_data[22],10) });
-		}
-			
-		if($(this).attr('id')=="ens160_eco2")
-		{
-			CanvGaugeArrOther[6].update({ value: parseInt(json_data.sensor_data[23],10)});
-		}
-			
-		if($(this).attr('id')=="ens160_AIQ")
-		{
-			CanvGaugeArrOther[7].update({ value: parseInt(json_data.sensor_data[24],10)});
-		}
+	j = 0;
+	$("canvas[data-type='radial-gauge']").each(function(){
+      const id = this.id;
+      const $this = $(this);
+
+      if (id === "GauAvTemp") setGaugeValue(id, RMSt);
+      if (id === "GauAvHum") setGaugeValue(id, RMSh);
+      if (id === "GauAvPress") setGaugeValue(id, RMSp);
+
+      if ($this.hasClass("canvasH1")) {
+        const v = parseFloat(json_data.sensor_data[ind + 10]);
+        setGaugeValue(id, isNaN(v) ? 0 : v);
+        ind++;
+      }
+
+      if ($this.hasClass("canvasP1")) {
+        if (j < CanvGaugeArrP.length) {
+          const p = parseFloat(json_data.sensor_data[j + 17]) * 0.750062;
+          const pv = isNaN(p) ? 0 : p;
+          Pdat = Number(pv.toFixed(2));
+          setGaugeValue(id, Pdat);
+          j++;
+        }
+      }
+
+      if (id === "GauAirQ" || id === "bme680_gr") {
+        const iaq = rIAQItem_convertValue(
+          parseInt(json_data.sensor_data[21], 10),
+          parseFloat(json_data.sensor_data[6]),
+          parseFloat(json_data.sensor_data[14])
+        );
+
+        if (iaq >= 0) setGaugeValue(id, iaq);
+      }
+
+      if (id === "ens160_tvoc") {
+        const v = parseInt(json_data.sensor_data[22], 10);
+        if (!isNaN(v)) setGaugeValue(id, v);
+      }
+
+      if (id === "ens160_eco2") {
+        const v = parseInt(json_data.sensor_data[23], 10);
+        if (!isNaN(v)) setGaugeValue(id, v);
+      }
+
+      if (id === "ens160_AIQ") {
+        const v = parseInt(json_data.sensor_data[24], 10);
+        if (!isNaN(v)) setGaugeValue(id, v);
+      }
 	});
 }
 	
 };
 
 function ftvall(cl) {
-    for (i = 0; i < maOBJ.length; i++) {
-        $("#" + maOBJ[i].name).val(cl);
-        $("#" + maOBJ[i].name)
-			.removeClass("is-invalid")
-			.html();
-        $("#" + maOBJ[i].name)
-			.removeClass("is-valid")
-			.html();
+    for (let i = 0; i < maOBJ.length; i++) {
+        const nm = maOBJ[i].name;
+        if (!nm) continue;                         // ← главное
+        const $el = $("#" + nm);
+        if (!$el.length) continue;
+        $el.val(cl).removeClass("is-invalid is-valid");
     }
 }
 
@@ -1046,8 +1073,8 @@ function fetch1(url, method, callback, time_out) {
 	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); 
 	//xhr.getResponseHeader('Content-Length',url.length);
 	// text/plain	;charset=UTF-8
-    xhr.timeout = time_out * 200;
-    xhr.send();
+	xhr.timeout = Number(time_out || 30) * 200;
+	xhr.send();
 }
 
 /**
@@ -1095,11 +1122,10 @@ function refr_rtc() {
 }
 
 function rm_b() {
-    // remove deviser HD
-    $(".mc1").removeClass("col-md-8 col-xl-8").html();
-    $(".bsn0").removeClass("col-md-4 col-xl-4").html();
+    $(".mc1").removeClass("col-md-8 col-xl-8");
+    $(".bsn0").removeClass("col-md-4 col-xl-4");
     $(".mc1").removeClass("noscroll collapse hide");
-    $(".mc1").addClass("col-12").html();
+    $(".mc1").addClass("col-12");                   // ← remove → removeClass
 }
 
 function sh_b() {
