@@ -8,6 +8,9 @@ var CanvGaugeArrT = [];
 var CanvGaugeArrP = [];
 var CanvGaugeArrH = [];
 var CanvGaugeArrOther = [];
+const FAIL_T[10] = {1,2,5,6,3,4,7,9,8,10}
+const FAIL_H[6] = {5,6,3,4,7,9}
+const FAIL_P[4] = {5,6,7,10}
 var cmd_descr = {
   0: "WSB_CMD_RXTX_DATA_TEMPERATURE",
   1: "WSB_CMD_RX_CFG_TEMPERATURE",
@@ -768,6 +771,7 @@ function onMessage(event)
 {
 arrbufcrc="";
 arrtemp="";
+REGFAIL=0;
 tmpf=0.0;
 ind=0,j=0,cmd=0,crc16_int=0;
 Pdat=0.0,RMSt=0.0,
@@ -845,29 +849,44 @@ if (json_data["sensor_data"])
 	//	{arrbufcrc[i]=json_data.time[i];j++;}
 	//for(i=0;i<json_data.time.length)
 	//	{arrbufcrc[i]=json_data.time[i];}
-	
+	REGFAIL = parseInt(json_data.sensor_data[40],16);
 	//
 	//	2.3 Scope RMS scope sensor_data
 	//
 	tmpf=1.0;
 	for(j=0;j<=9;j++)
 	{
-		if(parseFloat(json_data.sensor_data[j])<0)
-			tmpf=tmpf*(-1);
-	RMSt+=Math.abs(parseFloat(json_data.sensor_data[j]))
+		if((REGFAIL & (1<<REG_T[j]))==0)
+		{
+			ind++;
+			if((parseFloat(json_data.sensor_data[j])<0))
+				tmpf=tmpf*(-1);
+			RMSt+=Math.abs(parseFloat(json_data.sensor_data[j]))
+		}
 	}
-	RMSt=RMSt*0.1*tmpf;
+	RMSt=(RMSt/ind)*tmpf;
+	ind = 0;
+	
 	for(j=0;j<=6;j++)
 	{
-	RMSh+=parseFloat(json_data.sensor_data[j+10])
-		//console.log(RMSh)
-	}
-	RMSh=RMSh*0.14286;
+		if((REGFAIL & (1<<REG_H[j]))==0)
+		{
+			ind++;
+			RMSh+=parseFloat(json_data.sensor_data[j+10])
+			//console.log(RMSh)
+		}
+	RMSh=RMSh/ind;
+	ind = 0;	
+		
 	for(j=0;j<=3;j++)
 	{
-	RMSp+=parseFloat(json_data.sensor_data[j+17])
+		if((REGFAIL & (1<<REG_H[j]))==0)
+		{
+			ind++;
+			RMSp+=parseFloat(json_data.sensor_data[j+17])
+		}
 	}
-	RMSp=RMSp*0.25;
+	RMSp=RMSp/ind;
 
 	//console.log($("canvas[data-type='radial-gauge']"));
 	//console.log($("canvas[data-type='radial-gauge']").attr("i"));
@@ -918,7 +937,7 @@ console.log("Width "+Math.round((0.0244*parseInt(json_data.sensor_data[26+ind]))
 	//console.log(RMSh);
 	//console.log(RMSp);
 	
-	ind=0;j=0;
+	ind=0;
 	$("canvas[data-type='radial-gauge']").each(function(index){
 		if($(this).attr('id')=="GauAvTemp")
 		{
