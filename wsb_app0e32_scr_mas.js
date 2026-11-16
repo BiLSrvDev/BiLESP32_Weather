@@ -1,4 +1,4 @@
-// upda9a7
+// upda9a8
 // https://BiLSrvDev.github.io/BiLESP32_Weather/wsb_app0e32_scr_mas.js
 // reverse panelki dlya debug 
 // function onMessage(event) with 722 
@@ -171,7 +171,7 @@ $("canvas[data-type='radial-gauge']").each(function(index){
     animationDuration: 1500,
     animationRule: "linear"
 }).draw();
-      CanvGaugeArrT.push(gauge);
+      CanvGaugeArrP.push(gauge);
       CanvGaugeMap[id] = gauge;
 	 }
 	
@@ -219,8 +219,8 @@ $("canvas[data-type='radial-gauge']").each(function(index){
     needleCircleInner: false,
     animationDuration: 1500,
     animationRule: "linear"
-	}).draw();
-      CanvGaugeArrT.push(gauge);
+	}).draw();T
+      CanvGaugeArrH.push(gauge);
       CanvGaugeMap[id] = gauge;
 	}
 
@@ -263,8 +263,8 @@ if($(this).attr('id')=="GauAvTemp")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw();
-	  CanvGaugeArrT.push(gauge);
-      CanvGaugeMap[id] = gauge;
+          CanvGaugeArrOther.push(gauge);
+          CanvGaugeMap[id] = gauge;
 }
 	
 if($(this).attr('id')=="GauAvHum")
@@ -312,8 +312,8 @@ if($(this).attr('id')=="GauAvHum")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw();
-      CanvGaugeArrT.push(gauge);
-      CanvGaugeMap[id] = gauge;
+          CanvGaugeArrOther.push(gauge);
+          CanvGaugeMap[id] = gauge;
 }
 	
 	
@@ -362,8 +362,8 @@ if($(this).attr('id')=="GauAvPress")
     animationDuration: 1500,
     animationRule: "linear"
 }).draw();
-      CanvGaugeArrT.push(gauge);
-      CanvGaugeMap[id] = gauge;
+          CanvGaugeArrOther.push(gauge);
+          CanvGaugeMap[id] = gauge;
 }
 	
 if($(this).attr('id')=="GauAirQ" || $(this).attr('id')=="bme680_gr")
