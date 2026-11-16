@@ -911,7 +911,7 @@ if (Array.isArray(json_data.sensor_data) && json_data.sensor_data.length > 0)
 	for (j = 0; j < REG_P.length; j++) {
 		if ((REGFAIL & (1 << REG_P[j])) === 0) {
 			ind++;
-			RMSp += parseFloat(json_data.sensor_data[j + 17]);
+			RMSp += parseFloat(json_data.sensor_data[j + 17]) * 0.750062;
 		}
 	}
 	RMSp = ind ? RMSp / ind : 0;
